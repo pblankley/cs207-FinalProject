@@ -1,1 +1,1 @@
-# \center{Reaction Rates Calculator For Chemical Reactions}
+# Reaction Rates Calculator For Chemical Reactions

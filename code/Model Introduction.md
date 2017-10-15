@@ -14,5 +14,6 @@ Chemical reactions take place everywhere at any time. Computing the reaction rat
 ### 1.2 Key Terminology
 #### 1.2.1 Elementary reactions
 A detailed explanation of elementary reactions is provided [here](https://en.wikipedia.org/wiki/Elementary_reaction). In short, if there is no intermediates found during the span of a chemical reaction, we define the reation to be elementary.
+$\alpha$
 #### 1.2.2 Elementary reactions
 

@@ -1,7 +1,13 @@
-import xml.etree.ElementTree as ET
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 16
+
+@author: ryanjanssen
+"""
 import numpy as np
 
-
+# !!! Adding this here temporarily until we figure out the import bug
 def get_reactions(name):
     """ This function takes in the name of the input xml file, and returns a dictionary of relevant information for
         a set of chemical reactions
@@ -112,3 +118,33 @@ def get_reactions(name):
     reaction_count += 1
 
     return reaction_dict
+
+
+# Testing suite for XML parser.
+# NOTE: Requires accompanying XML test suite to be places in \test_xmls to function properly
+
+def test_working_xml():
+    # Test a standard output
+    expected_dict = {'species': ['H', 'O', 'OH', 'H2', 'H2O', 'O2'],
+                     'As': [35200000000.0, 0.0506, float('nan')],
+                     'bs': [float('nan'), 2.7, float('nan')],
+                     'Es': [71400.0, 26300.0, float('nan')],
+                     'ks': [float('nan'), float('nan'), 1000.0],
+                     'rxn_types': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
+                     'vprime': np.array([[ 1.,  0.,  0.],
+                                      [ 0.,  1.,  0.],
+                                      [ 0.,  0.,  1.],
+                                      [ 0.,  1.,  1.],
+                                      [ 0.,  0.,  0.],
+                                      [ 1.,  0.,  0.]]),
+                     'v2prime': np.array([[ 1.,  0.,  0.],
+                                      [ 1.,  0.,  0.],
+                                      [ 1.,  0.,  0.],
+                                      [ 0.,  0.,  0.],
+                                      [ 1.,  0.,  0.],
+                                      [ 0.,  0.,  0.]])}
+    assert (get_reactions('test_xmls/rxns.xml') == expected_dict)
+
+
+test_working_xml()
+

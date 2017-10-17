@@ -47,7 +47,7 @@ class Reaction:
                 'k': [10,10], 'coeftype': ['Constant','Constant']}
     >>> rrr = Reaction(pdict)
     >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
-    [-60.0,-70.0,70.0]
+    [-60.0, -70.0, 70.0]
     
     # Example with the progress rate 
     
@@ -58,9 +58,10 @@ class Reaction:
                 'k': [10,10], 'coeftype': ['Constant','Constant']}
     >>> rrr = Reaction(pdict)
     >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
-    [40.0,10.0]
+    [40.0, 10.0]
     
     # Example with reaction coef 
+    
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
     >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
@@ -71,19 +72,17 @@ class Reaction:
     [0.00044989777442266471, 1.5783556022951033]
     
     # Example with set params
+    
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
     >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
                 'b': [1.2,1.2], 'E': [1.7,1.7], \
                 'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
     >>> rrr = Reaction(pdict)
+    >>> w = rrr.reaction_coef(900)
+    >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
     >>> rrr.reaction_coef(900)
-    >>> rrr.set_params(1,k=10)
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 10]
-    
-    
-    
+    [0.00044989777442266471, 10.0]
     
     """
     def __init__(self, param_dict):
@@ -161,16 +160,13 @@ class Reaction:
         -------
         Raises: ValueError if the shapes of the v matrices are not equal and if the x vector is not mx1
         =======
-        Examples:
-        >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-        >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-        >>> x = np.array([[1.],[2.],[1.]])
-        >>> progress_rate(vp,vpp,x,10)
-        [40.0, 10.0]
+        
+        Doctest for this method in class 
+        
         """
         m,n = self.vprime.shape
         if x.shape != (m,1):
-            raise ValueError('The x vector must be the same as your v matrices, but it was {1}'.format(x.shape))
+            raise ValueError('The x vector must be the same height as your v matrices, but it was {x.shape[0]}')
         
         try:
             temp = float(T)
@@ -202,10 +198,8 @@ class Reaction:
         -------
         Raises: ValueError when temp is less than 0 or x is not (mx1)
         =======
-        Example:
-        >>> x = np.array([[1.],[2.],[1.]])
-        >>> reaction_rate(vp,vpp,x,10)
-        [-30.0, -60.0, 20.0]
+        
+        Doctests for this method in class
     
         """
         m,n = self.vprime.shape
@@ -322,7 +316,6 @@ class Reaction:
                 self.coeftypes[idx] = coeftype
             else:
                 raise ValueError('Your input for coeftype was {coeftype}, not an available option')
-
 
 
 

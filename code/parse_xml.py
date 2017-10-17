@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import numpy as np
-
+import os
 
 def get_reactions(name):
     """ This function takes in the name of the input xml file, and returns a dictionary of relevant information for
@@ -23,6 +23,9 @@ def get_reactions(name):
              reaction_dict['vprime'] : np array, full vprime matrix of all reactions in the xml file
              reaction_dict['v2prime'] : np array, full v2prime matrix of all reactions in the xml file
     """
+    if os.stat(name).st_size == 0:
+        raise FileNotFoundError("File is empty.  Hint: Double-check xml file contents")
+
     reaction_dict = {}
     tree = ET.parse(name)
     chemical_reactions = tree.getroot()
@@ -34,7 +37,7 @@ def get_reactions(name):
     for ele in chemical_reactions.iter('phase'):
         for e in ele.find('speciesArray').text.split():
             species_list.append(e)
-    reaction_dict['species'] = species_list
+    reaction_dict['species'] = np.array(species_list)
     if species_list == []:
         raise ValueError('Invalid species list in xml')
 
@@ -65,8 +68,11 @@ def get_reactions(name):
                 Es.append(float('nan'))
                 ks.append(float(coeff_set.find('k').text))
 
-    reaction_dict['As'], reaction_dict['bs'], reaction_dict['Es'], reaction_dict['ks'] = As, bs, Es, ks
-    reaction_dict['rxn_types'] = rxn_types
+    reaction_dict['As'] = np.array(As)
+    reaction_dict['bs'] = np.array(bs)
+    reaction_dict['Es'] = np.array(Es)
+    reaction_dict['ks'] = np.array(ks)
+    reaction_dict['rxn_types'] = np.array(rxn_types)
 
     # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
     vprime = np.zeros((len(species_list), len(reactions_list)))
@@ -87,7 +93,7 @@ def get_reactions(name):
         # Move to the next equation
         reaction_count += 1
 
-    reaction_dict['vprime'] = vprime
+    reaction_dict['vprime'] = np.array(vprime)
 
     # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
     v2prime = np.zeros((len(species_list), len(reactions_list)))
@@ -106,9 +112,9 @@ def get_reactions(name):
             concentration = float(specie_concentration.split(':')[1])
             v2prime[species_list.index(specie)][reaction_count] = concentration  # Update at the index
 
-    reaction_dict['v2prime'] = v2prime
+        # Move to the next equation
+        reaction_count += 1
 
-    # Move to the next equation
-    reaction_count += 1
+    reaction_dict['v2prime'] = np.array(v2prime)
 
     return reaction_dict

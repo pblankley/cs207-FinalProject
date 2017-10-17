@@ -30,14 +30,14 @@ def test_reaction_coef():
 
 def test_set_params():
     vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-        vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-            pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-                    rrr = Reaction(pdict)
-                        rrr.reaction_coef(900)
-                            rrr.set_params(1,k=10,coeftype='Constant')
-                                assert(rrr.reaction_coef(900)==[0.00044989777442266471, 10])
+    vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+            'b': [1.2,1.2], 'E': [1.7,1.7], \
+            'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
+    rrr = Reaction(pdict)
+    rrr.reaction_coef(900)
+    rrr.set_params(1,k=10,coeftype='Constant')
+    assert(rrr.reaction_coef(900)==[0.00044989777442266471, 10])
 
 # New Test Suite
 def test_init_shape():

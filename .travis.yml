@@ -4,7 +4,9 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+env:
+    - TEST_DIR=code
 script:
-    - py.test
+    - cd $TEST_DIR && py.test
 after_success:
     - coveralls

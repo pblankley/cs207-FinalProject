@@ -120,8 +120,8 @@ def test_T_type_error():
         rrr.reaction_coef(T)
     except TypeError as err:
         assert(type(err) == TypeError)
-'''
-    def test_progress_rate_x_shape_error():
+
+def test_progress_rate_x_shape_error():
     # Test for line 173 in chemkin.py
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
@@ -130,10 +130,9 @@ def test_T_type_error():
     'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
     try:
-    rrr.progress_rate(np.array([[1],[2],[3],[4]]),1)
+        rrr.progress_rate(np.array([[1],[2],[3],[4]]),1)
     except ValueError as err:
-    assert (type(err) == ValueError)
-    '''
+        assert (type(err) == ValueError)
 
 def test_progress_rate_T_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
@@ -170,8 +169,8 @@ def test_progress_rate_T_error_3():
         rrr.progress_rate(np.array([[1],[2],[3]]), [1,2,3])
     except TypeError as err:
         assert (type(err) == TypeError)
-'''
-    def test_reaction_rate_x_shape_error():
+
+def test_reaction_rate_x_shape_error():
     # Test for line 214 in chemkin.py
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
@@ -180,10 +179,10 @@ def test_progress_rate_T_error_3():
     'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
     try:
-    rrr.reaction_rate(np.array([[1],[2],[3],[4]]),1)
+        rrr.reaction_rate(np.array([[1],[2],[3],[4]]),1)
     except ValueError as err:
-    assert (type(err) == ValueError)
-    '''
+        assert (type(err) == ValueError)
+
 
 def test_reaction_rate_T_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
@@ -365,6 +364,3 @@ def test_set_param_error_coeftype():
     except ValueError as err:
         assert (type(err) == ValueError)
 
-test_reaction_rates()
-test_reaction_coef()
-test_set_params()

@@ -356,8 +356,8 @@ def get_reactions(name):
     for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
         reversible_attrib = reaction_data.get('reversible')
         type_attrib = reaction_data.get('type')
-        if reversible_attrib == 'yes':
-            raise NotImplementedError('Module does not support reversible reaction at this point.')
+        if reversible_attrib != 'no':
+            raise NotImplementedError('Module can only support reversible reaction at this point. Hint: reversible tag invalid.')
         if type_attrib != 'Elementary':
             raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type for reactions maybe invalid.')
 

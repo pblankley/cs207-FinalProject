@@ -14,11 +14,11 @@ import chemkin as ck
 def test_working_xml():
     # Test a standard output
     expected_dict = {'species': ['H', 'O', 'OH', 'H2', 'H2O', 'O2'],
-                     'As': [35200000000.0, 0.0506, float('nan')],
-                     'bs': [float('nan'), 2.7, float('nan')],
-                     'Es': [71400.0, 26300.0, float('nan')],
-                     'ks': [float('nan'), float('nan'), 1000.0],
-                     'rxn_types': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
+                     'A': [35200000000.0, 0.0506, float('nan')],
+                     'b': [float('nan'), 2.7, float('nan')],
+                     'E': [71400.0, 26300.0, float('nan')],
+                     'k': [float('nan'), float('nan'), 1000.0],
+                     'coeftype': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
                      'vprime': np.array([[ 1.,  0.,  0.],
                                       [ 0.,  1.,  0.],
                                       [ 0.,  0.,  1.],
@@ -33,12 +33,12 @@ def test_working_xml():
                                           [ 0.,  0.,  0.]])}
     actual_dict = ck.get_reactions("test_xmls/rxns.xml")
     assert np.array_equal(actual_dict['species'], expected_dict['species'])
-    for i in range(len(expected_dict['As'])):
-        assert actual_dict['As'][i] == expected_dict['As'][i] or np.isnan(actual_dict['As'][i])
-        assert actual_dict['bs'][i] == expected_dict['bs'][i] or np.isnan(actual_dict['bs'][i])
-        assert actual_dict['Es'][i] == expected_dict['Es'][i] or np.isnan(actual_dict['Es'][i])
-        assert actual_dict['ks'][i] == expected_dict['ks'][i] or np.isnan(actual_dict['ks'][i])
-    assert np.array_equal(actual_dict['rxn_types'], expected_dict['rxn_types'])
+    for i in range(len(expected_dict['A'])):
+        assert actual_dict['A'][i] == expected_dict['A'][i] or np.isnan(actual_dict['A'][i])
+        assert actual_dict['b'][i] == expected_dict['b'][i] or np.isnan(actual_dict['b'][i])
+        assert actual_dict['E'][i] == expected_dict['E'][i] or np.isnan(actual_dict['E'][i])
+        assert actual_dict['k'][i] == expected_dict['k'][i] or np.isnan(actual_dict['k'][i])
+    assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
     assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
     assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
 

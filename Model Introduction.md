@@ -85,18 +85,6 @@ __*Raises*__:
 * ValueError if numeric parameters are not numbers
 * TypeError if numerica parameters are not real numbers
 * ValueError if coefficient types other than Arrhenius, modifiedArrhenius, and Constant are used
-
-** Example: **
-```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
-    [-60.0, -70.0, 70.0]
-```
 </blockquote>
 <br>
 
@@ -114,6 +102,18 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError when T cannot be cast to a float or T is negative
+
+Implementation Example:
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+                'b': [1.2,1.2], 'E': [1.7,1.7], \
+                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
+    >>> rrr = Reaction(pdict)
+    >>> rrr.reaction_coef(900)
+    [0.00044989777442266471, 1.5783556022951033]
+```
 </blockquote>
 <br>
         
@@ -138,6 +138,18 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError if the shapes of the v matrices are not equal
+
+Implementation example:
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
+                'k': [10,10], 'coeftype': ['Constant','Constant']}
+    >>> rrr = Reaction(pdict)
+    >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
+    [40.0, 10.0]
+```
 </blockquote>
 <br>
        
@@ -159,6 +171,18 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError when temp is less than 0
+
+Implementation Example:
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
+                'k': [10,10], 'coeftype': ['Constant','Constant']}
+    >>> rrr = Reaction(pdict)
+    >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
+    [-60.0, -70.0, 70.0]
+```
 </blockquote>
 <br>
 
@@ -176,6 +200,20 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError ValueError when any input given a value other than None cannot be cast to a float
+
+Implementation example:
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+                'b': [1.2,1.2], 'E': [1.7,1.7], \
+                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
+    >>> rrr = Reaction(pdict)
+    >>> w = rrr.reaction_coef(900)
+    >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
+    >>> rrr.reaction_coef(900)
+    [0.00044989777442266471, 10.0]
+```
 </blockquote>
 <br>
     
@@ -296,50 +334,3 @@ All .xml reaction files should follow the sample format used below.  Source and 
 
 </ctml>
 ```
-
-
-
-
-
-
-
-    =========
-    Examples:
-    # Example with the reaction rate
-        
-
-    
-    # Example with the progress rate 
-    
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
-    [40.0, 10.0]
-    
-    # Example with reaction coef 
-    
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 1.5783556022951033]
-    
-    # Example with set params
-    
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
-    >>> w = rrr.reaction_coef(900)
-    >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 10.0]

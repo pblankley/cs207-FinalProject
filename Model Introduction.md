@@ -85,6 +85,18 @@ __*Raises*__:
 * ValueError if numeric parameters are not numbers
 * TypeError if numerica parameters are not real numbers
 * ValueError if coefficient types other than Arrhenius, modifiedArrhenius, and Constant are used
+
+** Example: **
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
+                'k': [10,10], 'coeftype': ['Constant','Constant']}
+    >>> rrr = Reaction(pdict)
+    >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
+    [-60.0, -70.0, 70.0]
+```
 </blockquote>
 <br>
 
@@ -295,14 +307,7 @@ All .xml reaction files should follow the sample format used below.  Source and 
     Examples:
     # Example with the reaction rate
         
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
-    [-60.0, -70.0, 70.0]
+
     
     # Example with the progress rate 
     

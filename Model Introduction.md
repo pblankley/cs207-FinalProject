@@ -71,6 +71,9 @@ The dictionary also contains lists (length corresponding to the columns of v' an
 
 NOTE: If one or more of these parameters is rendered useless or NA for a reaction it is given the value NaN. Coeftype is a list of strings containing the type of reaction.
 <blockquote>
+
+
+
 __*Args*__: 
 * param_dict; where param_dict is the output from the parser function.
     
@@ -88,6 +91,9 @@ __*Raises*__:
 #### 3.2.2 reaction_coef(self, T)
 Sets reaction coefficients for the given float temperature T.  May be used externally but more commonly called by the class' own function progress_rate.
 <blockquote>
+
+
+
 __*Args*__: 
 * T; float; the temperature for all reactions
 
@@ -108,6 +114,9 @@ This function calculates the progress rate $\omega$ of a reaction of the followi
                 
 It takes in the vectors v', v'' and x in the order [[A],[B],[C]].
 <blockquote>
+
+
+
 __*Args*__: 
 * v',v''; matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.              
 * x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
@@ -126,6 +135,9 @@ This function calculates the reaction rate of a reaction of the following form:
                     V'32*C -> V'12*A + V''22*B
 It takes in the vectors v', v'' from the class and x in the order [[A],[B],[C]].
 <blockquote>
+
+
+
 __*Args*__: 
 * x; vector, numpy array (or list) of length equal to the number of reactants in the system of equations.
 * T; float, the strictly positive temperature 
@@ -141,6 +153,9 @@ __*Raises*__:
 #### 3.2.5 set_params(self,idx,A=None,b=None,E=None,R=None, k=None, coeftype=None):
 This function takes inputs of the parameters you want to set for reaction coefficient calculations.
 <blockquote>
+
+
+
 __*Args*__: 
 * A,b,E,T,R; all floats and optional arguments
 
@@ -155,6 +170,8 @@ __*Raises*__:
 #### 3.2.6 _arrhenius(self, idx, T):
 This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the Arrhenius reaction rate coefficient.
 <blockquote>
+
+
 __*Args*__: 
 * T, float; temperature, (gets args from class).
 
@@ -185,6 +202,9 @@ __*Raises*__:
 #### 3.2.8 get_reactions(name):
 This function takes in the name of the input xml file, and returns a dictionary of relevant information for a set of chemical reactions.  Note this is a **function** within Chemkin and not a **method** of Reaction.
 <blockquote>
+
+
+
 __*Args*__: 
 * name; name of the input .xml file
 

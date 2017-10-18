@@ -6,7 +6,7 @@ Created on Mon Oct 16
 @author: ryanjanssen
 """
 import numpy as np
-import parse_xml as pa
+import chemkin as ck
 
 # Testing suite for XML parser.
 # NOTE: Requires accompanying XML test suite to be places in \test_xmls to function properly
@@ -31,7 +31,7 @@ def test_working_xml():
                                           [ 0.,  0.,  0.],
                                           [ 0.,  0.,  1.],
                                           [ 0.,  0.,  0.]])}
-    actual_dict = pa.get_reactions("test_xmls/rxns.xml")
+    actual_dict = ck.get_reactions("test_xmls/rxns.xml")
     assert np.array_equal(actual_dict['species'], expected_dict['species'])
     for i in range(len(expected_dict['As'])):
         assert actual_dict['As'][i] == expected_dict['As'][i] or np.isnan(actual_dict['As'][i])
@@ -46,7 +46,7 @@ def test_working_xml():
 def test_xml_file_not_found():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/the_ghost_of_files.xml")
+        ck.get_reactions("test_xmls/the_ghost_of_files.xml")
     except FileNotFoundError as err:
         assert(type(err)==FileNotFoundError)
 
@@ -54,7 +54,7 @@ def test_xml_file_not_found():
 def test_empty_xml_file():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_empty_file.xml")
+        ck.get_reactions("test_xmls/rxns_test_empty_file.xml")
     except FileNotFoundError as err:
         assert(type(err)==FileNotFoundError)
 
@@ -62,7 +62,7 @@ def test_empty_xml_file():
 def test_missing_arrhenius_parameters():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_arrhenius_parameters.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_arrhenius_parameters.xml")
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -70,7 +70,7 @@ def test_missing_arrhenius_parameters():
 def test_missing_constant_parameters():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_constant_parameters.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_constant_parameters.xml")
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -78,7 +78,7 @@ def test_missing_constant_parameters():
 def test_missing_modified_arrhenius_parameters():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_modified_arrhenius_parameters.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_modified_arrhenius_parameters.xml")
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -86,7 +86,7 @@ def test_missing_modified_arrhenius_parameters():
 def test_missing_reactants():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_reactants.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_reactants.xml")
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -94,7 +94,7 @@ def test_missing_reactants():
 def test_missing_reactions():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_reactions.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_reactions.xml")
     except ValueError as err:
         assert(type(err)==ValueError)
 
@@ -102,7 +102,7 @@ def test_missing_reactions():
 def test_missing_species():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_missing_species.xml")
+        ck.get_reactions("test_xmls/rxns_test_missing_species.xml")
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -110,7 +110,7 @@ def test_missing_species():
 def test_unexpected_reactant():
     # Test for an empty xml file
     try:
-        pa.get_reactions("test_xmls/rxns_test_unexpected_reactant.xml")
+        ck.get_reactions("test_xmls/rxns_test_unexpected_reactant.xml")
     except ValueError as err:
         assert(type(err)==ValueError)
 

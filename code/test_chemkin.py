@@ -11,7 +11,7 @@ from chemkin import Reaction
 def test_reaction_rates():
     vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
         'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
             'k': [10,10], 'coeftype': ['Constant','Constant']}
     x = np.array([[1.],[2.],[1.]])
@@ -22,7 +22,7 @@ def test_reaction_rates():
 def test_reaction_coef():
     vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
         'b': [1.2,1.2], 'E': [1.7,1.7], \
             'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -31,7 +31,7 @@ def test_reaction_coef():
 def test_set_params():
     vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
             'b': [1.2,1.2], 'E': [1.7,1.7], \
             'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -43,7 +43,7 @@ def test_set_params():
 def test_init_shape():
     vp = np.array([[1,2],[2,0]])
     vpp = np.array([1,2])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     try:
@@ -54,7 +54,7 @@ def test_init_shape():
 def test_init_value_error():
     vp = np.array([[1,2],[2,0]])
     vpp = np.array([[1,2],[2,1]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': ['f', .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': ['f', .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     try:
@@ -65,7 +65,7 @@ def test_init_value_error():
 def test_init_type_error():
     vp = np.array([[1,2],[2,0]])
     vpp = np.array([[1,2],[2,1]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.00045, .00045], \
         'b': [[1,2], 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     try:
@@ -76,7 +76,7 @@ def test_init_type_error():
 def test_init_A_error():
     vp = np.array([[1,2],[2,0]])
     vpp = np.array([[1,2],[2,1]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [-2, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [-2, .00045], \
         'b': [1, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     try:
@@ -87,7 +87,7 @@ def test_init_A_error():
 def test_coef_type_error():
     vp = np.array([[1,2],[2,0]])
     vpp = np.array([[1,2],[2,1]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [555, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [555, .00045], \
         'b': [1, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Invalid', 'modifiedArrhenius']}
     try:
@@ -98,7 +98,7 @@ def test_coef_type_error():
 def test_T_val_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -111,7 +111,7 @@ def test_T_val_error():
 def test_T_type_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -125,7 +125,7 @@ def test_progress_rate_x_shape_error():
     # Test for line 173 in chemkin.py
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
     'b': [1.2, 1.2], 'E': [1.7, 1.7], \
     'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -137,7 +137,7 @@ def test_progress_rate_x_shape_error():
 def test_progress_rate_T_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -149,7 +149,7 @@ def test_progress_rate_T_error():
 def test_progress_rate_T_error_2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -161,7 +161,7 @@ def test_progress_rate_T_error_2():
 def test_progress_rate_T_error_3():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -174,7 +174,7 @@ def test_reaction_rate_x_shape_error():
     # Test for line 214 in chemkin.py
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
     'b': [1.2, 1.2], 'E': [1.7, 1.7], \
     'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -187,7 +187,7 @@ def test_reaction_rate_x_shape_error():
 def test_reaction_rate_T_error():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -199,7 +199,7 @@ def test_reaction_rate_T_error():
 def test_reaction_rate_T_error_2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('nan'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -211,7 +211,7 @@ def test_reaction_rate_T_error_2():
 def test_arrhenius_k_overflow():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -223,7 +223,7 @@ def test_arrhenius_k_overflow():
 def test_mod_arrhenius_k_overflow():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -235,7 +235,7 @@ def test_mod_arrhenius_k_overflow():
 def test_set_param_error_A_type():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -247,7 +247,7 @@ def test_set_param_error_A_type():
 def test_set_param_error_A_type2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -259,7 +259,7 @@ def test_set_param_error_A_type2():
 def test_set_param_error_b_type():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -271,7 +271,7 @@ def test_set_param_error_b_type():
 def test_set_param_error_b_type2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.5, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.5, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -283,7 +283,7 @@ def test_set_param_error_b_type2():
 def test_set_param_error_E_type():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -295,7 +295,7 @@ def test_set_param_error_E_type():
 def test_set_param_error_E_type2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.5, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.5, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -307,7 +307,7 @@ def test_set_param_error_E_type2():
 def test_set_param_error_R_type():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -319,7 +319,7 @@ def test_set_param_error_R_type():
 def test_set_param_error_R_type2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.5, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.5, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -331,7 +331,7 @@ def test_set_param_error_R_type2():
 def test_set_param_error_k_type():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('inf'), .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('inf'), .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -343,7 +343,7 @@ def test_set_param_error_k_type():
 def test_set_param_error_k_type2():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.5, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.5, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)
@@ -355,7 +355,7 @@ def test_set_param_error_k_type2():
 def test_set_param_error_coeftype():
     vp = np.array([[1., 2.], [2., 0.], [0., 2.]])
     vpp = np.array([[0., 0.], [0., 1.], [2., 1.]])
-    pdict = {'vprime': vp, 'v2prime': vpp, 'A': [0.5, .00045], \
+    pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [0.5, .00045], \
         'b': [1.2, 1.2], 'E': [1.7, 1.7], \
             'k': [float('inf'), float('nan')], 'coeftype': ['Arrhenius', 'modifiedArrhenius']}
     rrr = Reaction(pdict)

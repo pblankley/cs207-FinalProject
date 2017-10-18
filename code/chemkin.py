@@ -44,7 +44,7 @@ class Reaction:
         
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
                 'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
                 'k': [10,10], 'coeftype': ['Constant','Constant']}
     >>> rrr = Reaction(pdict)
@@ -55,7 +55,7 @@ class Reaction:
     
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
                 'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
                 'k': [10,10], 'coeftype': ['Constant','Constant']}
     >>> rrr = Reaction(pdict)
@@ -66,7 +66,7 @@ class Reaction:
     
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
                 'b': [1.2,1.2], 'E': [1.7,1.7], \
                 'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
     >>> rrr = Reaction(pdict)
@@ -77,7 +77,7 @@ class Reaction:
     
     >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
     >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
                 'b': [1.2,1.2], 'E': [1.7,1.7], \
                 'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
     >>> rrr = Reaction(pdict)

@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # Parses rxns.xml and calculates chemical reaction rates for each of the six species
 
 # Pull data from .xml file, and set concentration rates
-demo_reaction = ck.Reaction(ck.get_reactions("test_xmls/rxns.xml"))
+demo_reaction = ck.Reaction(ck.get_reactions("demo_xmls/rxns.xml"))
 concs = np.array([2.0, 1.0, 2.0, 0.5, 1.5, 2.5]).reshape(-1, 1)
 
 # Calculate reaction rates vs T

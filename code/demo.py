@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt
 # Demo of chemkin module
 # Parses rxns.xml and calculates chemical reaction rates for each of the six species
 
+print(ck.get_reactions("demo_xmls/rxns.xml"))
+
 # Pull data from .xml file, and set concentration rates
 demo_reaction = ck.Reaction(ck.get_reactions("demo_xmls/rxns.xml"))
 concs = np.array([2.0, 1.0, 2.0, 0.5, 1.5, 2.5]).reshape(-1, 1)

@@ -272,6 +272,30 @@ __*Returns*__:
 __*Raises*__: 
 * FileNotFoundError if name is not a valid .xml path
 * ValueError if xml is not in specified data format
+
+Implementation example:
+```
+    >>> print(ck.get_reactions("demo_xmls/rxns.xml"))
+    {'species': array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'], dtype='<U3'), 
+     'A': array([ 3.52000000e+10, 5.06000000e-02, nan]), 
+     'b': array([ nan,  2.7, nan]), 
+     'E': array([ 71400.,  26300., nan]), 
+     'k': array([ nan, nan, 1000.]), 
+     'coeftype': array(['Arrhenius', 'modifiedArrhenius', 'Constant'], dtype='<U17'), 
+     'vprime': array([[ 1.,  0.,  0.],
+                       [ 0.,  1.,  0.],
+                       [ 0.,  0.,  1.],
+                       [ 0.,  1.,  1.],
+                       [ 0.,  0.,  0.],
+                       [ 1.,  0.,  0.]]), 
+       'v2prime': array([[ 0.,  1.,  1.],
+                       [ 1.,  0.,  0.],
+                       [ 1.,  1.,  0.],
+                       [ 0.,  0.,  0.],
+                       [ 0.,  0.,  1.],
+                       [ 0.,  0.,  0.]])}
+```
+
 </blockquote>
 <br>
 

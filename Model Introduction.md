@@ -113,7 +113,7 @@ Implementation Example:
     >>> rrr = Reaction(pdict)
     >>> rrr.reaction_coef(900)
     [0.00044989777442266471, 1.5783556022951033]
-    ```
+```
 </blockquote>
 <br>
         
@@ -213,7 +213,7 @@ Implementation example:
     >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
     >>> rrr.reaction_coef(900)
     [0.00044989777442266471, 10.0]
-    ```
+```
 </blockquote>
 <br>
     

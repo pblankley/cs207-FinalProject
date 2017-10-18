@@ -4,6 +4,7 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+    - pip install --use-mirrors matplotlib
 env:
     - TEST_DIR=code
 script:

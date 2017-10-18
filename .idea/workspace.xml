@@ -19,11 +19,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="chemkin.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="chemkin.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/code/chemkin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="95" column="23" lean-forward="true" selection-start-line="95" selection-start-column="23" selection-end-line="95" selection-end-column="23" />
+            <state relative-caret-position="-2306">
+              <caret line="181" column="30" lean-forward="false" selection-start-line="181" selection-start-column="17" selection-end-line="181" selection-end-column="30" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
               </folding>
@@ -55,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="demo.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="demo.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/code/demo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+            <state relative-caret-position="476">
+              <caret line="28" column="53" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="28" selection-end-column="53" />
               <folding>
                 <element signature="e#100#118#0" expanded="true" />
               </folding>
@@ -92,6 +92,8 @@
       <find>parseerror</find>
       <find>os</find>
       <find>reaction_rate</find>
+      <find>parser method</find>
+      <find>reaction_coef</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -106,8 +108,8 @@
         <option value="$PROJECT_DIR$/code/test_parser.py" />
         <option value="$PROJECT_DIR$/code/test_chemkin.py" />
         <option value="$PROJECT_DIR$/code/test_parse_xml.py" />
-        <option value="$PROJECT_DIR$/code/chemkin.py" />
         <option value="$PROJECT_DIR$/code/demo.py" />
+        <option value="$PROJECT_DIR$/code/chemkin.py" />
       </list>
     </option>
   </component>
@@ -140,7 +142,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -163,6 +164,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -303,6 +305,54 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/code/chemkin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1564">
+          <caret line="95" column="23" lean-forward="false" selection-start-line="95" selection-start-column="23" selection-end-line="95" selection-end-column="23" />
+          <folding>
+            <element signature="e#1#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/test_parse_xml.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="935">
+          <caret line="56" column="62" lean-forward="false" selection-start-line="56" selection-start-column="8" selection-end-line="56" selection-end-column="62" />
+          <folding>
+            <element signature="e#99#117#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/test_chemkin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="16" column="31" lean-forward="false" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
+          <folding>
+            <element signature="e#130#148#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/test_xmls/rxns.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#100#118#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/code/chemkin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3281">
@@ -468,22 +518,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/code/chemkin.py">
+    <entry file="file://$PROJECT_DIR$/code/demo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="95" column="23" lean-forward="true" selection-start-line="95" selection-start-column="23" selection-end-line="95" selection-end-column="23" />
+        <state relative-caret-position="476">
+          <caret line="28" column="53" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="28" selection-end-column="53" />
           <folding>
-            <element signature="e#1#19#0" expanded="true" />
+            <element signature="e#100#118#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/code/demo.py">
+    <entry file="file://$PROJECT_DIR$/code/chemkin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        <state relative-caret-position="-2306">
+          <caret line="181" column="30" lean-forward="false" selection-start-line="181" selection-start-column="17" selection-end-line="181" selection-end-column="30" />
           <folding>
-            <element signature="e#100#118#0" expanded="true" />
+            <element signature="e#1#19#0" expanded="true" />
           </folding>
         </state>
       </provider>

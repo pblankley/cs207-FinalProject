@@ -1,10 +1,11 @@
 language: python
 python:
     - "3.5"
+install:
+    - pip install --use-mirrors matplotlib
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
-    - pip install matplotlib
 env:
     - TEST_DIR=code
 script:

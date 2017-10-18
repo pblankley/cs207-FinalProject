@@ -351,6 +351,16 @@ def get_reactions(name):
     if chemical_reactions == []:
         raise ValueError('Unable to locate reaction data in xml')
 
+    # Check if the reaction is reversible
+    # If reversible then raise not implemented errror
+    for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
+        reversible_attrib = reaction_data.get('reversible')
+        type_attrib = reaction_data.get('type')
+        if reversible_attrib == 'yes':
+            raise NotImplementedError('Module does not support reversible reaction at this point.')
+        if type_attrib != 'Elementary':
+            raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type for reactions maybe invalid.')
+
     # Get the list and number of species
     species_list = []
     for ele in chemical_reactions.iter('phase'):

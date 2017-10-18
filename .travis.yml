@@ -1,10 +1,11 @@
 language: python
 python:
     - "3.5"
+install:
+    - sudo apt-get install python3-matplotlib
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
-    - sudo apt-get install python3-matplotlib
 env:
     - TEST_DIR=code 
 script:

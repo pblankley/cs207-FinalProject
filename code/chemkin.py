@@ -42,45 +42,25 @@ class Reaction:
     Examples:
     # Example with the reaction rate
         
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_rate_1.xml')
     >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
     [-60.0, -70.0, 70.0]
     
     # Example with the progress rate 
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_rate_1.xml')
     >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
     [40.0, 10.0]
     
     # Example with reaction coef 
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_coef_1.xml')
     >>> rrr.reaction_coef(900)
     [0.00044989777442266471, 1.5783556022951033]
     
     # Example with set params
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_coef_1.xml')
     >>> w = rrr.reaction_coef(900)
     >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
     >>> rrr.reaction_coef(900)
@@ -88,10 +68,10 @@ class Reaction:
     
     """
     def __init__(self, xml_doc):
-        param_dict = self.get_reactions(xml_doc)
-        self.vprime = param_dict['vprime']
-        self.v2prime = param_dict['v2prime']
-        self.species = param_dict['species']
+        self.param_dict = self.get_reactions(xml_doc)
+        self.vprime = self.param_dict['vprime']
+        self.v2prime = self.param_dict['v2prime']
+        self.species = self.param_dict['species']
 
         # Check for equal shapes in v' and v''
         if self.vprime.shape!=self.v2prime.shape:
@@ -99,11 +79,11 @@ class Reaction:
         
         # Make sure every parameter for A,b,E,k comes in as a float
         try: 
-            self.A = [float(a) for a in param_dict['A']]
-            self.b = [float(i) for i in param_dict['b']]
-            self.E = [float(e) for e in param_dict['E']]
-            self.k = [float(j) for j in param_dict['k']]
-            self.R = [8.314 for i in range(len(param_dict['A']))]
+            self.A = [float(a) for a in self.param_dict['A']]
+            self.b = [float(i) for i in self.param_dict['b']]
+            self.E = [float(e) for e in self.param_dict['E']]
+            self.k = [float(j) for j in self.param_dict['k']]
+            self.R = [8.314 for i in range(len(self.param_dict['A']))]
         except (TypeError, ValueError) as err:
                 if type(err) == ValueError:
                     raise ValueError('You must input a numeric, real number data type for all parameters.')
@@ -115,14 +95,17 @@ class Reaction:
         
         # Validate input model types
         valid_types = ['modifiedArrhenius','Arrhenius','Constant']
-        if all(pt in valid_types for pt in param_dict['coeftype']):
-            self.coeftypes = param_dict['coeftype']
+        if all(pt in valid_types for pt in self.param_dict['coeftype']):
+            self.coeftypes = self.param_dict['coeftype']
         else:
             raise ValueError("Your input file gave, {param_dict['coeftype']}, not valid reaction coefficients type.")
     
     def __str__(self):
         return "species: {}, vprime: {}, v2prime: {}, A: {}, b: {}, E: {}, k: {}, coeftypes: {}".format( \
                          self.species, self.vprime, self.v2prime, self.A, self.b, self.E, self.k, self.coeftypes)
+    
+    def get_params(self):
+        return self.param_dict
     
     def reaction_coef(self, T):
         """Set reaction coefficients for the given float T and mt (model type).

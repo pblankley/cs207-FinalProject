@@ -270,10 +270,10 @@ def test_working_xml():
     actual_dict = Reaction("test_xmls/rxns.xml").get_params()
     assert np.array_equal(actual_dict['species'], expected_dict['species'])
     for i in range(len(expected_dict['A'])):
-        assert actual_dict['A'][i] == expected_dict['A'][i] or np.isnan(actual_dict['A'][i])
-        assert actual_dict['b'][i] == expected_dict['b'][i] or np.isnan(actual_dict['b'][i])
-        assert actual_dict['E'][i] == expected_dict['E'][i] or np.isnan(actual_dict['E'][i])
-        assert actual_dict['k'][i] == expected_dict['k'][i] or np.isnan(actual_dict['k'][i])
+        assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
+        assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
+        assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
+        assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
     assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
     assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
     assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])

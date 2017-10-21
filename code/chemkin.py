@@ -90,8 +90,8 @@ class Reaction:
                 raise TypeError('You must input a real number. Hint: you may have put in a list.')
         
         # All A values must be ge 0
-        if any(a<=0 for a in self.A):
-            raise ValueError('Your A values should be strictly positive. They were {self.A}.')
+        #if any(a<=0 for a in self.A):
+        #    raise ValueError('Your A values should be strictly positive. They were {self.A}.')
         
         # Validate input model types
         valid_types = ['modifiedArrhenius','Arrhenius','Constant']
@@ -99,7 +99,15 @@ class Reaction:
             self.coeftypes = self.param_dict['coeftype']
         else:
             raise ValueError("Your input file gave, {param_dict['coeftype']}, not valid reaction coefficients type.")
-    
+
+        # Check A values only for Arrhenius and modified Arrhenius reactions
+        arrhenius_types = ['modifiedArrhenius','Arrhenius']
+        for index, rxn_type in enumerate(self.param_dict['coeftype']):
+            if rxn_type in arrhenius_types:
+                if self.A[index] <= 0:
+                    raise ValueError('Your A values should be strictly positive. Hint: some of the A values are \
+                    less than 0')
+
     def __str__(self):
         return "species: {}, vprime: {}, v2prime: {}, A: {}, b: {}, E: {}, k: {}, coeftypes: {}".format( \
                          self.species, self.vprime, self.v2prime, self.A, self.b, self.E, self.k, self.coeftypes)
@@ -372,19 +380,43 @@ class Reaction:
             for coeff_set in reaction_data.find('rateCoeff'):
                 rxn_types.append(coeff_set.tag)
                 if coeff_set.tag == 'Arrhenius':
+                    # Check if received unwanted value for a Arrhenius reaction coefficient
+                    b = coeff_set.find('b')
+                    k = coeff_set.find('k')
+                    if b != None:
+                        print('warning: received a b value for Arrhenius reaction rate coefficient. Replace with 0.')
+                    if k != None:
+                        print('warning: received a k value for Arrhenius reaction rate coefficient. Replace with 0.')
+                    bs.append(0)
+                    ks.append(0)
+
                     As.append(float(coeff_set.find('A').text))
-                    bs.append(float('nan'))
                     Es.append(float(coeff_set.find('E').text))
-                    ks.append(float('nan'))
                 elif coeff_set.tag == 'modifiedArrhenius':
+                    # Check if received unwanted value for a modified Arrhenius reaction coefficient
+                    k = coeff_set.find('k')
+                    if k != None:
+                        print('warning: received a k value for modified Arrhenius reaction rate coefficient. Replace with 0.')
+                    ks.append(0)
+
                     As.append(float(coeff_set.find('A').text))
                     bs.append(float(coeff_set.find('b').text))
                     Es.append(float(coeff_set.find('E').text))
-                    ks.append(float('nan'))
                 elif coeff_set.tag == 'Constant':
-                    As.append(float('nan'))
-                    bs.append(float('nan'))
-                    Es.append(float('nan'))
+                    # Check if received unwanted value for a constant reaction coefficient
+                    A = coeff_set.find('A')
+                    b = coeff_set.find('b')
+                    E = coeff_set.find('E')
+                    if A != None:
+                        print('warning: received a A value for a constant reaction rate coefficient. Replace with 0.')
+                    if b != None:
+                        print('warning: received a b value for constant reaction rate coefficient. Replace with 0.')
+                    if E != None:
+                        print('warning: recieved a E value for constant reaction rate coefficient. Replace with 0.')
+                    As.append(0)
+                    bs.append(0)
+                    Es.append(0)
+
                     ks.append(float(coeff_set.find('k').text))
     
         reaction_dict['A'] = np.array(As)

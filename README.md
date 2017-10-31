@@ -30,4 +30,8 @@ Paul: I wrote chemkin and reaction_coeffs and associated test suites, and I will
 
 Let me know if you would rather do something else, cause all the current stuff I assigned for us is just arbitrary.
 
+ ### Feature Ideas:
+ We could solve the f function we return with the module for zero and find the roots.
+ 
+ We could also integrate the function f and possibly return values like entropy or heat
  

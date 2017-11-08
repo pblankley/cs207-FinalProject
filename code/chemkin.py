@@ -345,17 +345,18 @@ class Reaction:
         Returns: reaction_dict, dictionary of data for a reaction.  Contains the following keys:
                  reaction_dict['species'] : list of strings, species of the reaction
                  reaction_dict['As']: list of floats, corresponding to reaction parameter A for each equation
-                                               = NaN for any equations that don't use A.
+                                               = 0 for any equations that don't use A.
                  reaction_dict['bs']: list of floats, corresponding to reaction parameter b for each equation
-                                               = NaN for any equations that don't use b.
+                                               = 0 for any equations that don't use b.
                  reaction_dict['Es']: list of floats, corresponding to reaction parameter E for each equation
-                                               = NaN for any equations that don't use E.
+                                               = 0 for any equations that don't use E.
                  reaction_dict['ks']: list of floats, corresponding to reaction parameter k for each equation
-                                               = NaN for any equations that don't use k (ie, non-constant equations).
+                                               = 0 for any equations that don't use k (ie, non-constant equations).
                  reaction_dict['rxn_types']: List of strings. Elements Correspond to same reactions as reaction_parameters.
                                                Each string is one of { 'Arrhenius', 'modifiedArrhenius', 'Constant' }
                  reaction_dict['vprime'] : np array, full vprime matrix of all reactions in the xml file
                  reaction_dict['v2prime'] : np array, full v2prime matrix of all reactions in the xml file
+                 reaction_dict['reversible'] : List of True or False, indicating if the type of each reaction in order
         """
         if os.stat(name).st_size == 0:
             raise FileNotFoundError("File is empty.  Hint: Double-check xml file contents")
@@ -368,14 +369,37 @@ class Reaction:
     
         # Check if the reaction is reversible
         # If reversible then raise not implemented errror
+        valid_atrribs = set(['yes', 'no'])
+        reversible_indicator = []
         for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
             reversible_attrib = reaction_data.get('reversible')
             type_attrib = reaction_data.get('type')
-            if reversible_attrib != 'no':
-                raise NotImplementedError('Module can only support reversible reaction at this point. Hint: reversible tag invalid.')
+
+            # Check if there exists a tag for reversible and type
+            if reversible_attrib == None:
+                raise ValueError('Unspecified reversible type: missing reversible tag. Hint: check if you include a \
+                                reversible tag for every reaction.')
+            if type_attrib == None:
+                raise ValueError('Unspecified Elementary type: missing type tag. Hint: check if you include a tag type \
+                                indicating if the reaction is elementary or not.')
+
+            # Check if the reversible tag is yes or no
+            if reversible_attrib not in valid_atrribs:
+                raise ValueError('Attributes of reversible tag invalid. Hint: check the content of the reversible tag.\
+                                 Must be "yes" or "no".')
+
+            # Append the list indicating reversible reactions or not
+            if reversible_attrib == 'yes':
+                reversible_indicator.append(True)
+            else:
+                reversible_indicator.append(False)
+
+            # Check the type tag, only support Elementary type at this point
             if type_attrib != 'Elementary':
-                raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type for reactions maybe invalid.')
-    
+                raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type \
+                                        for reactions maybe invalid.')
+        reaction_dict['reversible'] = reversible_indicator
+
         # Get the list and number of species
         species_list = []
         for ele in chemical_reactions.iter('phase'):

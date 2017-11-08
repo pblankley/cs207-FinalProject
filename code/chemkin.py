@@ -5,6 +5,22 @@ import os
 import xml.etree.ElementTree as ET
 
 
+
+#### TODO 
+#### PARSER - BOYUAN
+# Add parameter for if reversible reaction or not (as a list in order of reactions) 
+# Add a key in the param dictionary called 'reversible'
+# e.x.  [True, False, False, True] for the key when the associated value in the xml is yes -True, no -False
+# make sure you also edit the parser to take in elementary, irreversible, and reversible reactions
+
+#### MAKE SQL - Ryan 
+
+#### REACTION_COEFS - PAUL
+# Add seperate if blocks within reaction coefs to get forward and backward 
+#### PROGRESS_RATE - PAUL
+# Add if block in progress rate to calc for both rev and non rev reactions 
+
+
 class Reaction:
     """
     This class represents the entire reaction for a set of elementary reactions.
@@ -67,6 +83,7 @@ class Reaction:
     [0.00044989777442266471, 10.0]
     
     """
+    
     def __init__(self, xml_doc):
         self.param_dict = self.get_reactions(xml_doc)
         self.vprime = self.param_dict['vprime']

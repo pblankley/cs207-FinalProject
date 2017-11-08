@@ -349,3 +349,59 @@ def test_unexpected_reactant():
         Reaction("test_xmls/rxns_test_unexpected_reactant.xml")
     except ValueError as err:
         assert(type(err)==ValueError)
+
+
+# This part of tests check the functionality of reaction_dict['reversible']
+def test_reversible_missing_tag():
+    # Test for missing reversible tag
+    try:
+        Reaction("test_xmls/rxns_test_reversible_missing_tag.xml")
+    except ValueError as err:
+        assert(type(err) == ValueError)
+
+def test_type_missing_tag():
+    # Test for missing type tag
+    try:
+        Reaction("test_xmls/rxns_test_type_missing_tag.xml")
+    except ValueError as err:
+        assert(type(err) == ValueError)
+
+def test_reversible_tag_error():
+    # Test for invalid reversible tag attribute: i.e. not yes nor no
+    try:
+        Reaction("test_xmls/rxns_test_reversible_tag_error.xml")
+    except ValueError as err:
+        assert(type(err) == ValueError)
+
+def test_reversible_input():
+    # Test a standard output
+    expected_dict = {'species': ['H', 'O', 'OH', 'H2', 'H2O', 'O2'],
+                     'A': [35200000000.0, 0.0506, float('nan')],
+                     'b': [float('nan'), 2.7, float('nan')],
+                     'E': [71400.0, 26300.0, float('nan')],
+                     'k': [float('nan'), float('nan'), 1000.0],
+                     'coeftype': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
+                     'vprime': np.array([[1., 0., 0.],
+                                         [0., 1., 0.],
+                                         [0., 0., 1.],
+                                         [0., 1., 1.],
+                                         [0., 0., 0.],
+                                         [1., 0., 0.]]),
+                     'v2prime': np.array([[0., 1., 1.],
+                                          [1., 0., 0.],
+                                          [1., 1., 0.],
+                                          [0., 0., 0.],
+                                          [0., 0., 1.],
+                                          [0., 0., 0.]]),
+                     'reversible': [False, True, False]}
+    actual_dict = Reaction("test_xmls/rxns_test_reversible_input.xml").get_params()
+    assert np.array_equal(actual_dict['species'], expected_dict['species'])
+    for i in range(len(expected_dict['A'])):
+        assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
+        assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
+        assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
+        assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
+    assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
+    assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
+    assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
+    assert actual_dict['reversible'] == expected_dict['reversible']

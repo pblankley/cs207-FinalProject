@@ -5,6 +5,22 @@ import os
 import xml.etree.ElementTree as ET
 
 
+
+#### TODO 
+#### PARSER - BOYUAN
+# Add parameter for if reversible reaction or not (as a list in order of reactions) 
+# Add a key in the param dictionary called 'reversible'
+# e.x.  [True, False, False, True] for the key when the associated value in the xml is yes -True, no -False
+# make sure you also edit the parser to take in elementary, irreversible, and reversible reactions
+
+#### MAKE SQL - Ryan 
+
+#### REACTION_COEFS - PAUL
+# Add seperate if blocks within reaction coefs to get forward and backward 
+#### PROGRESS_RATE - PAUL
+# Add if block in progress rate to calc for both rev and non rev reactions 
+
+
 class Reaction:
     """
     This class represents the entire reaction for a set of elementary reactions.
@@ -42,55 +58,37 @@ class Reaction:
     Examples:
     # Example with the reaction rate
         
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_rate_1.xml')
     >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
     [-60.0, -70.0, 70.0]
     
     # Example with the progress rate 
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_rate_1.xml')
     >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
     [40.0, 10.0]
     
     # Example with reaction coef 
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_coef_1.xml')
     >>> rrr.reaction_coef(900)
     [0.00044989777442266471, 1.5783556022951033]
     
     # Example with set params
     
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'species': None, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
+    >>> rrr = Reaction('test_xmls/reaction_coef_1.xml')
     >>> w = rrr.reaction_coef(900)
     >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
     >>> rrr.reaction_coef(900)
     [0.00044989777442266471, 10.0]
     
     """
-    def __init__(self, param_dict):
-        self.vprime = param_dict['vprime']
-        self.v2prime = param_dict['v2prime']
-        self.species = param_dict['species']
+    
+    def __init__(self, xml_doc):
+        self.param_dict = self.get_reactions(xml_doc)
+        self.vprime = self.param_dict['vprime']
+        self.v2prime = self.param_dict['v2prime']
+        self.species = self.param_dict['species']
 
         # Check for equal shapes in v' and v''
         if self.vprime.shape!=self.v2prime.shape:
@@ -98,28 +96,41 @@ class Reaction:
         
         # Make sure every parameter for A,b,E,k comes in as a float
         try: 
-            self.A = [float(a) for a in param_dict['A']]
-            self.b = [float(i) for i in param_dict['b']]
-            self.E = [float(e) for e in param_dict['E']]
-            self.k = [float(j) for j in param_dict['k']]
-            self.R = [8.314 for i in range(len(param_dict['A']))]
+            self.A = [float(a) for a in self.param_dict['A']]
+            self.b = [float(i) for i in self.param_dict['b']]
+            self.E = [float(e) for e in self.param_dict['E']]
+            self.k = [float(j) for j in self.param_dict['k']]
+            self.R = [8.314 for i in range(len(self.param_dict['A']))]
         except (TypeError, ValueError) as err:
                 if type(err) == ValueError:
                     raise ValueError('You must input a numeric, real number data type for all parameters.')
                 raise TypeError('You must input a real number. Hint: you may have put in a list.')
         
         # All A values must be ge 0
-        if any(a<=0 for a in self.A):
-            raise ValueError('Your A values should be strictly positive. They were {self.A}.')
+        #if any(a<=0 for a in self.A):
+        #    raise ValueError('Your A values should be strictly positive. They were {self.A}.')
         
         # Validate input model types
         valid_types = ['modifiedArrhenius','Arrhenius','Constant']
-        if all(pt in valid_types for pt in param_dict['coeftype']):
-            self.coeftypes = param_dict['coeftype']
+        if all(pt in valid_types for pt in self.param_dict['coeftype']):
+            self.coeftypes = self.param_dict['coeftype']
         else:
             raise ValueError("Your input file gave, {param_dict['coeftype']}, not valid reaction coefficients type.")
+
+        # Check A values only for Arrhenius and modified Arrhenius reactions
+        arrhenius_types = ['modifiedArrhenius','Arrhenius']
+        for index, rxn_type in enumerate(self.param_dict['coeftype']):
+            if rxn_type in arrhenius_types:
+                if self.A[index] <= 0:
+                    raise ValueError('Your A values should be strictly positive. Hint: some of the A values are \
+                    less than 0')
+
+    def __str__(self):
+        return "species: {}, vprime: {}, v2prime: {}, A: {}, b: {}, E: {}, k: {}, coeftypes: {}".format( \
+                         self.species, self.vprime, self.v2prime, self.A, self.b, self.E, self.k, self.coeftypes)
     
-    
+    def get_params(self):
+        return self.param_dict
     
     def reaction_coef(self, T):
         """Set reaction coefficients for the given float T and mt (model type).
@@ -141,6 +152,8 @@ class Reaction:
             
         for i,mt in enumerate(self.coeftypes):
             if mt == 'Constant':
+                if self.k[i]==0:
+                    print('warning. you are using a constant k with k=0')
                 pass
             elif mt == 'Arrhenius':
                 self.k[i] = self._arrhenius(i,temp)
@@ -256,6 +269,8 @@ class Reaction:
         Raises: OverflowError after constant evaluation
                 FloatingPointError after constant evaluation for underflow
         """
+        if self.b[idx]==0:
+            print('Warning: You are using modified arrhenius with b=0')
         k = self.A[idx]*(T**self.b[idx])*np.exp(-self.E[idx]/(self.R[idx]*T))
         if k == float('inf'):
             raise OverflowError('overflow error in evalutation of constant')
@@ -321,129 +336,177 @@ class Reaction:
                 raise ValueError('Your input for coeftype was {coeftype}, not an available option')
 
 
-def get_reactions(name):
-    """ This function takes in the name of the input xml file, and returns a dictionary of relevant information for
-        a set of chemical reactions
-    ------
-    Args: name: name of the input xml file
-    ------
-    Returns: reaction_dict, dictionary of data for a reaction.  Contains the following keys:
-             reaction_dict['species'] : list of strings, species of the reaction
-             reaction_dict['As']: list of floats, corresponding to reaction parameter A for each equation
-                                           = NaN for any equations that don't use A.
-             reaction_dict['bs']: list of floats, corresponding to reaction parameter b for each equation
-                                           = NaN for any equations that don't use b.
-             reaction_dict['Es']: list of floats, corresponding to reaction parameter E for each equation
-                                           = NaN for any equations that don't use E.
-             reaction_dict['ks']: list of floats, corresponding to reaction parameter k for each equation
-                                           = NaN for any equations that don't use k (ie, non-constant equations).
-             reaction_dict['rxn_types']: List of strings. Elements Correspond to same reactions as reaction_parameters.
-                                           Each string is one of { 'Arrhenius', 'modifiedArrhenius', 'Constant' }
-             reaction_dict['vprime'] : np array, full vprime matrix of all reactions in the xml file
-             reaction_dict['v2prime'] : np array, full v2prime matrix of all reactions in the xml file
-    """
-    if os.stat(name).st_size == 0:
-        raise FileNotFoundError("File is empty.  Hint: Double-check xml file contents")
+    def get_reactions(self,name):
+        """ This function takes in the name of the input xml file, and returns a dictionary of relevant information for
+            a set of chemical reactions
+        ------
+        Args: name: name of the input xml file
+        ------
+        Returns: reaction_dict, dictionary of data for a reaction.  Contains the following keys:
+                 reaction_dict['species'] : list of strings, species of the reaction
+                 reaction_dict['As']: list of floats, corresponding to reaction parameter A for each equation
+                                               = 0 for any equations that don't use A.
+                 reaction_dict['bs']: list of floats, corresponding to reaction parameter b for each equation
+                                               = 0 for any equations that don't use b.
+                 reaction_dict['Es']: list of floats, corresponding to reaction parameter E for each equation
+                                               = 0 for any equations that don't use E.
+                 reaction_dict['ks']: list of floats, corresponding to reaction parameter k for each equation
+                                               = 0 for any equations that don't use k (ie, non-constant equations).
+                 reaction_dict['rxn_types']: List of strings. Elements Correspond to same reactions as reaction_parameters.
+                                               Each string is one of { 'Arrhenius', 'modifiedArrhenius', 'Constant' }
+                 reaction_dict['vprime'] : np array, full vprime matrix of all reactions in the xml file
+                 reaction_dict['v2prime'] : np array, full v2prime matrix of all reactions in the xml file
+                 reaction_dict['reversible'] : List of True or False, indicating if the type of each reaction in order
+        """
+        if os.stat(name).st_size == 0:
+            raise FileNotFoundError("File is empty.  Hint: Double-check xml file contents")
+    
+        reaction_dict = {}
+        tree = ET.parse(name)
+        chemical_reactions = tree.getroot()
+        if chemical_reactions == []:
+            raise ValueError('Unable to locate reaction data in xml')
+    
+        # Check if the reaction is reversible
+        # If reversible then raise not implemented errror
+        valid_atrribs = set(['yes', 'no'])
+        reversible_indicator = []
+        for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
+            reversible_attrib = reaction_data.get('reversible')
+            type_attrib = reaction_data.get('type')
 
-    reaction_dict = {}
-    tree = ET.parse(name)
-    chemical_reactions = tree.getroot()
-    if chemical_reactions == []:
-        raise ValueError('Unable to locate reaction data in xml')
+            # Check if there exists a tag for reversible and type
+            if reversible_attrib == None:
+                raise ValueError('Unspecified reversible type: missing reversible tag. Hint: check if you include a \
+                                reversible tag for every reaction.')
+            if type_attrib == None:
+                raise ValueError('Unspecified Elementary type: missing type tag. Hint: check if you include a tag type \
+                                indicating if the reaction is elementary or not.')
 
-    # Check if the reaction is reversible
-    # If reversible then raise not implemented errror
-    for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
-        reversible_attrib = reaction_data.get('reversible')
-        type_attrib = reaction_data.get('type')
-        if reversible_attrib != 'no':
-            raise NotImplementedError('Module can only support reversible reaction at this point. Hint: reversible tag invalid.')
-        if type_attrib != 'Elementary':
-            raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type for reactions maybe invalid.')
+            # Check if the reversible tag is yes or no
+            if reversible_attrib not in valid_atrribs:
+                raise ValueError('Attributes of reversible tag invalid. Hint: check the content of the reversible tag.\
+                                 Must be "yes" or "no".')
 
-    # Get the list and number of species
-    species_list = []
-    for ele in chemical_reactions.iter('phase'):
-        for e in ele.find('speciesArray').text.split():
-            species_list.append(e)
-    reaction_dict['species'] = np.array(species_list)
-    if species_list == []:
-        raise ValueError('Invalid species list in xml')
+            # Append the list indicating reversible reactions or not
+            if reversible_attrib == 'yes':
+                reversible_indicator.append(True)
+            else:
+                reversible_indicator.append(False)
 
-    # Get the reaction rate types and parameters for each reaction
-    As, bs, Es, ks = [], [], [], []
-    rxn_types = []
+            # Check the type tag, only support Elementary type at this point
+            if type_attrib != 'Elementary':
+                raise NotImplementedError('Module can only support elementary reaction at this point. Hint: input type \
+                                        for reactions maybe invalid.')
+        reaction_dict['reversible'] = reversible_indicator
 
-    reactions_list = chemical_reactions.find('reactionData').findall('reaction')
-    if reactions_list == []:
-        raise ValueError('Invalid reactions list in xml')
+        # Get the list and number of species
+        species_list = []
+        for ele in chemical_reactions.iter('phase'):
+            for e in ele.find('speciesArray').text.split():
+                species_list.append(e)
+        reaction_dict['species'] = np.array(species_list)
+        if species_list == []:
+            raise ValueError('Invalid species list in xml')
+    
+        # Get the reaction rate types and parameters for each reaction
+        As, bs, Es, ks = [], [], [], []
+        rxn_types = []
+    
+        reactions_list = chemical_reactions.find('reactionData').findall('reaction')
+        if reactions_list == []:
+            raise ValueError('Invalid reactions list in xml')
+    
+        for reaction_data in reactions_list:
+            for coeff_set in reaction_data.find('rateCoeff'):
+                rxn_types.append(coeff_set.tag)
+                if coeff_set.tag == 'Arrhenius':
+                    # Check if received unwanted value for a Arrhenius reaction coefficient
+                    b = coeff_set.find('b')
+                    k = coeff_set.find('k')
+                    if b != None:
+                        print('warning: received a b value for Arrhenius reaction rate coefficient. Replace with 0.')
+                    if k != None:
+                        print('warning: received a k value for Arrhenius reaction rate coefficient. Replace with 0.')
+                    bs.append(0)
+                    ks.append(0)
 
-    for reaction_data in reactions_list:
-        for coeff_set in reaction_data.find('rateCoeff'):
-            rxn_types.append(coeff_set.tag)
-            if coeff_set.tag == 'Arrhenius':
-                As.append(float(coeff_set.find('A').text))
-                bs.append(float('nan'))
-                Es.append(float(coeff_set.find('E').text))
-                ks.append(float('nan'))
-            elif coeff_set.tag == 'modifiedArrhenius':
-                As.append(float(coeff_set.find('A').text))
-                bs.append(float(coeff_set.find('b').text))
-                Es.append(float(coeff_set.find('E').text))
-                ks.append(float('nan'))
-            elif coeff_set.tag == 'Constant':
-                As.append(float('nan'))
-                bs.append(float('nan'))
-                Es.append(float('nan'))
-                ks.append(float(coeff_set.find('k').text))
+                    As.append(float(coeff_set.find('A').text))
+                    Es.append(float(coeff_set.find('E').text))
+                elif coeff_set.tag == 'modifiedArrhenius':
+                    # Check if received unwanted value for a modified Arrhenius reaction coefficient
+                    k = coeff_set.find('k')
+                    if k != None:
+                        print('warning: received a k value for modified Arrhenius reaction rate coefficient. Replace with 0.')
+                    ks.append(0)
 
-    reaction_dict['A'] = np.array(As)
-    reaction_dict['b'] = np.array(bs)
-    reaction_dict['E'] = np.array(Es)
-    reaction_dict['k'] = np.array(ks)
-    reaction_dict['coeftype'] = np.array(rxn_types)
+                    As.append(float(coeff_set.find('A').text))
+                    bs.append(float(coeff_set.find('b').text))
+                    Es.append(float(coeff_set.find('E').text))
+                elif coeff_set.tag == 'Constant':
+                    # Check if received unwanted value for a constant reaction coefficient
+                    A = coeff_set.find('A')
+                    b = coeff_set.find('b')
+                    E = coeff_set.find('E')
+                    if A != None:
+                        print('warning: received a A value for a constant reaction rate coefficient. Replace with 0.')
+                    if b != None:
+                        print('warning: received a b value for constant reaction rate coefficient. Replace with 0.')
+                    if E != None:
+                        print('warning: recieved a E value for constant reaction rate coefficient. Replace with 0.')
+                    As.append(0)
+                    bs.append(0)
+                    Es.append(0)
 
-    # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
-    vprime = np.zeros((len(species_list), len(reactions_list)))
-    reaction_count = 0
-
-    for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
-        # Find the reactants data
-        reactants_text = reaction_data.find('reactants').text
-
-        # Split the data
-        for specie_concentration in reactants_text.split(' '):
-
-            # Get the name of the specie and its concentration
-            specie = specie_concentration.split(':')[0]
-            concentration = float(specie_concentration.split(':')[1])
-            vprime[species_list.index(specie)][reaction_count] = concentration # Update at the index
-
-        # Move to the next equation
-        reaction_count += 1
-
-    reaction_dict['vprime'] = np.array(vprime)
-
-    # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
-    v2prime = np.zeros((len(species_list), len(reactions_list)))
-    reaction_count = 0
-
-    for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
-
-        # Find the reactants data
-        products_text = reaction_data.find('products').text
-
-        # Split the data
-        for specie_concentration in products_text.split(' '):
-
-            # Get the name of the specie and its concentration
-            specie = specie_concentration.split(':')[0]
-            concentration = float(specie_concentration.split(':')[1])
-            v2prime[species_list.index(specie)][reaction_count] = concentration  # Update at the index
-
-        # Move to the next equation
-        reaction_count += 1
-
-    reaction_dict['v2prime'] = np.array(v2prime)
-
-    return reaction_dict
+                    ks.append(float(coeff_set.find('k').text))
+    
+        reaction_dict['A'] = np.array(As)
+        reaction_dict['b'] = np.array(bs)
+        reaction_dict['E'] = np.array(Es)
+        reaction_dict['k'] = np.array(ks)
+        reaction_dict['coeftype'] = np.array(rxn_types)
+    
+        # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
+        vprime = np.zeros((len(species_list), len(reactions_list)))
+        reaction_count = 0
+    
+        for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
+            # Find the reactants data
+            reactants_text = reaction_data.find('reactants').text
+    
+            # Split the data
+            for specie_concentration in reactants_text.split(' '):
+    
+                # Get the name of the specie and its concentration
+                specie = specie_concentration.split(':')[0]
+                concentration = float(specie_concentration.split(':')[1])
+                vprime[species_list.index(specie)][reaction_count] = concentration # Update at the index
+    
+            # Move to the next equation
+            reaction_count += 1
+    
+        reaction_dict['vprime'] = np.array(vprime)
+    
+        # Get the reactants for the 'vprime' matrix and arrange the vprime matrix
+        v2prime = np.zeros((len(species_list), len(reactions_list)))
+        reaction_count = 0
+    
+        for reaction_data in chemical_reactions.find('reactionData').findall('reaction'):
+    
+            # Find the reactants data
+            products_text = reaction_data.find('products').text
+    
+            # Split the data
+            for specie_concentration in products_text.split(' '):
+    
+                # Get the name of the specie and its concentration
+                specie = specie_concentration.split(':')[0]
+                concentration = float(specie_concentration.split(':')[1])
+                v2prime[species_list.index(specie)][reaction_count] = concentration  # Update at the index
+    
+            # Move to the next equation
+            reaction_count += 1
+    
+        reaction_dict['v2prime'] = np.array(v2prime)
+    
+        return reaction_dict

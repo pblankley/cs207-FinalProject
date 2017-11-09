@@ -1,0 +1,9 @@
+# changelog for chemkin 
+
+## authors: Paul Blankley, Ryan Janssen, Boyuan Sun
+
+## 0.1.0
+
+Initial version of the package with the chemkin module and related test set.
+
+

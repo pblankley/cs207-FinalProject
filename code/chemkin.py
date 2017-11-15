@@ -351,7 +351,24 @@ class ReactionSet:
     
         return reaction_dict
     
+    
+# Elementary Reaction
 class Reaction:
+    """This class represents the abstract class for all Elementary reactions.  
+    It is used as the base class for both irreversible and reversible reactions. 
+    The class holds the related information to one reaction in a set of reactions,
+    and has functions to calculate the reaction coefficients, progress rate, and 
+    overall reaction rate.
+    =========
+    Methods:
+        reaction_coef(T): returns the reaction coefficients in the form (forward coef, backward coef).
+                        NOTE: if the reaction is irreversible and there is no backward coef, this function
+                        will return (forward coef, None)
+        progress_rate(x,T): will return the progress rate for the reaction
+        reaction_rate(x,T): will return the reaction rate for the reaction
+    ---------
+    NOTE: This is the base class and will raise NotImplementedError in several methods if used like the subclasses.
+    """
     def __init__(self, react_dict, species):
         self.species = species
         self.react_dict = react_dict
@@ -593,8 +610,8 @@ class ReversibleReaction(Reaction):
         a = self.get_nasa_coefs(T)
         v = self.v2prime - self.vprime
         gamma = np.sum(v)
-        raise NotImplementedError('make the sql database and query it')
-        # Why do we calculate this top line???
+        
+        # Not used, but present for completeness
         # Cp_R = (a[:,0] + a[:,1] * T + a[:,2] * T**2.0 + a[:,3] * T**3.0 + a[:,4] * T**4.0)
         
         H_RT = (a[:,0] + a[:,1] * T / 2.0 + a[:,2] * T**2.0 / 3.0 + a[:,3] * T**3.0 / 4.0 \

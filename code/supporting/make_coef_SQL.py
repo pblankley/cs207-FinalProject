@@ -92,7 +92,7 @@ def coef_sql(species_list):
         !!!
     """
     # Instantiate SQLite database
-    db = sqlite3.connect('.\coef.sqlite')
+    db = sqlite3.connect('..\coef.sqlite')
 
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS COEF_SQL")

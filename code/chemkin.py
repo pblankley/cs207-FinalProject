@@ -3,7 +3,7 @@ import numpy as np
 from functools import reduce
 import os
 import xml.etree.ElementTree as ET
-
+import sqlite3
 
 #### TODO 
 #### Make SQL call and get nasa coefs in - Paul
@@ -92,9 +92,9 @@ class ReactionSet:
         for r in self.param_dict['reactions']:
             if r['reversible']:
                 self.number_reverse+=1
-                self.reactions.append(ReversibleReaction(r))
+                self.reactions.append(ReversibleReaction(r,self.species))
             else:
-                self.reactions.append(IrreversibleReaction(r))
+                self.reactions.append(IrreversibleReaction(r,self.species))
         
     def reaction_rates(self,x,T):
         # gets reaction rates from reaction classes
@@ -351,8 +351,26 @@ class ReactionSet:
     
         return reaction_dict
     
+    
+# Elementary Reaction
 class Reaction:
-    def __init__(self, react_dict):
+    """This class represents the abstract class for all Elementary reactions.  
+    It is used as the base class for both irreversible and reversible reactions. 
+    The class holds the related information to one reaction in a set of reactions,
+    and has functions to calculate the reaction coefficients, progress rate, and 
+    overall reaction rate.
+    =========
+    Methods:
+        reaction_coef(T): returns the reaction coefficients in the form (forward coef, backward coef).
+                        NOTE: if the reaction is irreversible and there is no backward coef, this function
+                        will return (forward coef, None)
+        progress_rate(x,T): will return the progress rate for the reaction
+        reaction_rate(x,T): will return the reaction rate for the reaction
+    ---------
+    NOTE: This is the base class and will raise NotImplementedError in several methods if used like the subclasses.
+    """
+    def __init__(self, react_dict, species):
+        self.species = species
         self.react_dict = react_dict
         self.vprime = self.react_dict['vprime']
         self.v2prime = self.react_dict['v2prime']
@@ -512,8 +530,8 @@ class Reaction:
         return f
 
 class IrreversibleReaction(Reaction):
-    def __init__(self, react_dict):
-        super().__init__(react_dict)
+    def __init__(self, react_dict, species):
+        super().__init__(react_dict, species)
         
         if self.rev:
             raise ValueError('You put a reversible reaction in the irreversible reaction class.')
@@ -565,8 +583,8 @@ class IrreversibleReaction(Reaction):
 
 ######### TODO Make SQL call and get nasa coefs
 class ReversibleReaction(Reaction):
-    def __init__(self, react_dict):
-        super().__init__(react_dict)
+    def __init__(self, react_dict, species):
+        super().__init__(react_dict, species)
         self.p0 = 1.0e+05
         self.kb = 0
         
@@ -576,14 +594,24 @@ class ReversibleReaction(Reaction):
     def __str__(self):
         return "vprime: {1}, v2prime: {2}, A: {3}, b: {4}, E: {5}, k: {6}, kb: {7}, coeftypes: {8}".format( \
                  self.vprime, self.v2prime, self.A, self.b, self.E, self.k, self.kb, self.coeftype)
-
+        
+    def get_nasa_coefs(self, T):
+        db = sqlite3.connect('COEF.sqlite')
+        cursor = db.cursor()
+        species_sql = ', '.join(self.species)
+        query = ''' SELECT COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7
+                    FROM COEF_SQL
+                    WHERE SPECIES_NAME in ('''+species_sql+''') AND '''+str(T)+''' BETWEEN TLOW AND THIGH'''
+        print(cursor.execute(query).fetchall())
+    
+    
+    
     def reaction_coef_backward(self, T):
-        ######### TODO Make SQL call and get nasa coefs
-        a = "Get NASA coefs"
+        a = self.get_nasa_coefs(T)
         v = self.v2prime - self.vprime
         gamma = np.sum(v)
-        raise NotImplementedError('make the sql database and query it')
-        # Why do we calculate this top line???
+        
+        # Not used, but present for completeness
         # Cp_R = (a[:,0] + a[:,1] * T + a[:,2] * T**2.0 + a[:,3] * T**3.0 + a[:,4] * T**4.0)
         
         H_RT = (a[:,0] + a[:,1] * T / 2.0 + a[:,2] * T**2.0 / 3.0 + a[:,3] * T**3.0 / 4.0 \

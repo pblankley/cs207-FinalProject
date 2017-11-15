@@ -24,8 +24,6 @@ import matplotlib.pyplot as plt
 demo_reaction = ck.ReactionSet("demo_xmls/rxns.xml")
 concs = np.array([2.0, 1.0, 2.0, 0.5, 1.5, 2.5]).reshape(-1, 1)
 
-print(demo_reaction)
- 
 # Calculate reaction rates vs T
 T_range = np.arange(1273,5273)
 
@@ -37,6 +35,7 @@ for i, T in enumerate(T_range):
 for i, specie in enumerate(demo_reaction.species):
     plt.plot(T_range,rates_plot[:,i], label = specie)
 
+print(demo_reaction.get_params())
 plt.xlabel("Temperature (K)")
 plt.ylabel("Reaction rate")
 plt.title("Reaction rate of each specie")

@@ -217,37 +217,49 @@ def test_set_param_error_coeftype():
 
 # Parser section of testing 
 ## UPDATE FOR NEW PARSER
+## UPDATE the expected dict to match the output
 def test_working_xml():
     # Test a standard output
-    expected_dict = {'species': ['H', 'O', 'OH', 'H2', 'H2O', 'O2'],
-                     'A': [35200000000.0, 0.0506, float('nan')],
-                     'b': [float('nan'), 2.7, float('nan')],
-                     'E': [71400.0, 26300.0, float('nan')],
-                     'k': [float('nan'), float('nan'), 1000.0],
-                     'coeftype': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
-                     'vprime': np.array([[ 1.,  0.,  0.],
-                                      [ 0.,  1.,  0.],
-                                      [ 0.,  0.,  1.],
-                                      [ 0.,  1.,  1.],
-                                      [ 0.,  0.,  0.],
-                                      [ 1.,  0.,  0.]]),
-                     'v2prime': np.array([[ 0.,  1.,  1.],
-                                          [ 1.,  0.,  0.],
-                                          [ 1.,  1.,  0.],
-                                          [ 0.,  0.,  0.],
-                                          [ 0.,  0.,  1.],
-                                          [ 0.,  0.,  0.]])}
-    actual_dict = ReactionSet("test_xmls/rxns.xml").get_params()
-    assert np.array_equal(actual_dict['species'], expected_dict['species'])
-    for i in range(len(expected_dict['A'])):
-        assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
-        assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
-        assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
-        assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
-    assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
-    assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
-    assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
+    expected_dict = {'reactions': [{'reversible': False, 'coeftype': 'Arrhenius', 'b': 0, 'k': 0, 'A': 35200000000.0, 'E': 71400.0, \
+                    'vprime': np.array([[1.],[0.],[0.],[0.],[0.],[1.]]), 'v2prime': np.array([[0.],[1.],[1.],[0.],[0.],[0.]])},\
+                   {'reversible': False, 'coeftype': 'modifiedArrhenius', 'k': 0, 'A': 0.0506, 'b': 2.7, 'E': 26300.0,\
+                    'vprime': np.array([[0.],[1.],[0.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[1.],[0.],[0.],[0.]])},\
+                   {'reversible': False, 'coeftype': 'Constant', 'A': 0, 'b': 0, 'E': 0, 'k': 1000.0, \
+                    'vprime': np.array([[0.],[0.],[1.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[0.],[0.],[1.],[0.]])}],\
+                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} \
 
+    actual_dict = ReactionSet("test_xmls/rxns.xml").get_params()
+    expected_species = np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])
+
+    # Test for each reactions relevant information
+    for index, expected_dict_index in enumerate(expected_dict['reactions']):
+        cur_dict_index = actual_dict['reactions'][index]
+        assert cur_dict_index['reversible'] == expected_dict_index['reversible']
+        assert cur_dict_index['coeftype'] == expected_dict_index['coeftype']
+        assert cur_dict_index['b'] == expected_dict_index['b']
+        assert cur_dict_index['k'] == expected_dict_index['k']
+        assert cur_dict_index['A'] == expected_dict_index['A']
+        assert cur_dict_index['E'] == expected_dict_index['E']
+        for i, ele in enumerate(cur_dict_index['vprime']):
+            assert ele == expected_dict_index['vprime'][i]
+        for i, ele in enumerate(cur_dict_index['v2prime']):
+            assert ele == expected_dict_index['v2prime'][i]
+
+    # Test for the new species entry
+    for index, ele in enumerate(expected_dict):
+        assert expected_species[index] == actual_dict['species'][index]
+
+
+    # previous test
+    #assert np.array_equal(actual_dict['species'], expected_dict['species'])
+    #for i in range(len(expected_dict['A'])):
+    #    assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
+    #    assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
+    #    assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
+    #    assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
+    #assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
+    #assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
+    #assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
 
 def test_xml_file_not_found():
     # Test for an empty xml file
@@ -343,36 +355,48 @@ def test_reversible_tag_error():
     except ValueError as err:
         assert(type(err) == ValueError)
 
-# UPDATE FOR NEW PARSER 
+# UPDATE FOR NEW PARSER
+# Update new form of input
+# This test case is not complete, still need to test for the NASA inputs
 def test_reversible_input():
     # Test a standard output
-    expected_dict = {'species': ['H', 'O', 'OH', 'H2', 'H2O', 'O2'],
-                     'A': [35200000000.0, 0.0506, float('nan')],
-                     'b': [float('nan'), 2.7, float('nan')],
-                     'E': [71400.0, 26300.0, float('nan')],
-                     'k': [float('nan'), float('nan'), 1000.0],
-                     'coeftype': ['Arrhenius', 'modifiedArrhenius', 'Constant'],
-                     'vprime': np.array([[1., 0., 0.],
-                                         [0., 1., 0.],
-                                         [0., 0., 1.],
-                                         [0., 1., 1.],
-                                         [0., 0., 0.],
-                                         [1., 0., 0.]]),
-                     'v2prime': np.array([[0., 1., 1.],
-                                          [1., 0., 0.],
-                                          [1., 1., 0.],
-                                          [0., 0., 0.],
-                                          [0., 0., 1.],
-                                          [0., 0., 0.]]),
-                     'reversible': [False, True, False]}
+    expected_dict = {'reactions': [{'reversible': False, 'coeftype': 'Arrhenius', 'b': 0, 'k': 0, 'A': 35200000000.0, 'E': 71400.0, \
+                    'vprime': np.array([[1.],[0.],[0.],[0.],[0.],[1.]]), 'v2prime': np.array([[0.],[1.],[1.],[0.],[0.],[0.]])},\
+                   {'reversible': True, 'coeftype': 'modifiedArrhenius', 'k': 0, 'A': 0.0506, 'b': 2.7, 'E': 26300.0,\
+                    'vprime': np.array([[0.],[1.],[0.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[1.],[0.],[0.],[0.]])},\
+                   {'reversible': False, 'coeftype': 'Constant', 'A': 0, 'b': 0, 'E': 0, 'k': 1000.0, \
+                    'vprime': np.array([[0.],[0.],[1.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[0.],[0.],[1.],[0.]])}],\
+                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} \
+
     actual_dict = ReactionSet("test_xmls/rxns_test_reversible_input.xml").get_params()
-    assert np.array_equal(actual_dict['species'], expected_dict['species'])
-    for i in range(len(expected_dict['A'])):
-        assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
-        assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
-        assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
-        assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
-    assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
-    assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
-    assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
-    assert actual_dict['reversible'] == expected_dict['reversible']
+
+    # Test for each reactions relevant information
+    for index, expected_dict_index in enumerate(expected_dict['reactions']):
+        cur_dict_index = actual_dict['reactions'][index]
+        #assert cur_dict_index['reversible'] == expected_dict_index['reversible']
+        assert cur_dict_index['coeftype'] == expected_dict_index['coeftype']
+        assert cur_dict_index['b'] == expected_dict_index['b']
+        assert cur_dict_index['k'] == expected_dict_index['k']
+        assert cur_dict_index['A'] == expected_dict_index['A']
+        assert cur_dict_index['E'] == expected_dict_index['E']
+        for i, ele in enumerate(cur_dict_index['vprime']):
+            assert ele == expected_dict_index['vprime'][i]
+        for i, ele in enumerate(cur_dict_index['v2prime']):
+            assert ele == expected_dict_index['v2prime'][i]
+
+    expected_species = np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])
+    # Test for the new species entry
+    for index, ele in enumerate(expected_dict):
+        assert expected_species[index] == actual_dict['species'][index]
+
+
+
+    #assert np.array_equal(actual_dict['species'], expected_dict['species'])
+    #for i in range(len(expected_dict['A'])):
+    #    assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
+    #    assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
+    #    assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
+    #    assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
+    #assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
+    #assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
+    #assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])

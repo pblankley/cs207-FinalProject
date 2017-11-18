@@ -1,6 +1,8 @@
 import sqlite3
 import numpy as np
+import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def drop_empty(this_list):
     """
@@ -52,7 +54,8 @@ def get_species_list(filename):
             ValueError if file is not truncated with 4 in penultimate line
     """
     # Open and parse text file into lines
-    with open(filename, "r") as file:
+    thermo_loc = os.path.join(BASE_DIR, filename)
+    with open(thermo_loc, "r") as file:
         th = file.read()
         lines = drop_empty(th.split('\n'))
 
@@ -92,7 +95,8 @@ def coef_sql(species_list):
         !!!
     """
     # Instantiate SQLite database
-    db = sqlite3.connect('..\coef.sqlite')
+    db_loc = os.path.join(BASE_DIR, "../COEF.sqlite")
+    db = sqlite3.connect(db_loc)
 
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS COEF_SQL")
@@ -100,7 +104,7 @@ def coef_sql(species_list):
     # Create COEF_SQL table
     cursor.execute('''CREATE TABLE COEF_SQL (
               ID INT PRIMARY KEY NOT NULL,
-              SPECIES_NAME TEXT, 
+              SPECIES_NAME TEXT,
               TLOW FLOAT,
               THIGH FLOAT,
               COEFF_1 FLOAT,
@@ -121,8 +125,8 @@ def coef_sql(species_list):
                           specie['low_temp'],
                           specie['mid_temp']) +
                           tuple(specie['low_range_poly']))
-        cursor.execute('''INSERT INTO COEF_SQL (ID, SPECIES_NAME, TLOW, THIGH, 
-                               COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7) 
+        cursor.execute('''INSERT INTO COEF_SQL (ID, SPECIES_NAME, TLOW, THIGH,
+                               COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7)
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', vals_to_insert)
 
         # Add high_range coefficient set to COEF_SQL for given species
@@ -131,8 +135,8 @@ def coef_sql(species_list):
                            specie['mid_temp'],
                            specie['high_temp']) +
                           tuple(specie['high_range_poly']))
-        cursor.execute('''INSERT INTO COEF_SQL (ID, SPECIES_NAME, TLOW, THIGH, 
-                                   COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7) 
+        cursor.execute('''INSERT INTO COEF_SQL (ID, SPECIES_NAME, TLOW, THIGH,
+                                   COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7)
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', vals_to_insert)
         id += 2
 

@@ -5,6 +5,8 @@ import os
 import xml.etree.ElementTree as ET
 import sqlite3
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 class ReactionSet:
     """
     This class represents the entire reaction for a set of elementary reactions.
@@ -601,7 +603,8 @@ class ReversibleReaction(Reaction):
         --------
         Raises: ValueError if the query returns nothing.
          """
-        db = sqlite3.connect('COEF.sqlite')
+        db_loc = os.path.join(BASE_DIR, "COEF.sqlite")
+        db = sqlite3.connect(db_loc)
         cursor = db.cursor()
         species_sql = ''
 

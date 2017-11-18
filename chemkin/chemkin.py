@@ -44,30 +44,30 @@ class ReactionSet:
     Examples:
     # Example with the reaction rate
 
-    >>> rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_rate_1.xml')
     >>> list(rrr.reaction_rates(np.array([[1.],[2.],[1.]]),10))
     [-60.0, -70.0, 70.0]
 
     # Example with the progress rate
 
-    >>> rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_rate_1.xml')
     >>> list(rrr.progress_rates(np.array([[1.],[2.],[1.]]),10))
     [40.0, 10.0]
 
     # Example with reaction coef
 
-    >>> rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
     >>> rrr.reaction_coefs(900)[0][0]
     0.00044989777442266471
 
-    >>> rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
     >>> rrr.reaction_coefs(900)[1][0]
     1.5783556022951033
 
 
     # Example with set params
 
-    >>> rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
     >>> w = rrr.reaction_coefs(900)
     >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
     >>> rrr.reaction_coefs(900)[1][0]

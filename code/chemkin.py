@@ -603,7 +603,7 @@ class ReversibleReaction(Reaction):
         --------
         Raises: ValueError if the query returns nothing.
          """
-        db_loc = os.path.join(BASE_DIR, "COEF.sqlite")
+        db_loc = os.path.join(BASE_DIR, "supporting/COEF.sqlite")
         db = sqlite3.connect(db_loc)
         cursor = db.cursor()
         species_sql = ''

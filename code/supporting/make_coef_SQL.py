@@ -95,7 +95,7 @@ def coef_sql(species_list):
         !!!
     """
     # Instantiate SQLite database
-    db_loc = os.path.join(BASE_DIR, "../COEF.sqlite")
+    db_loc = os.path.join(BASE_DIR, "COEF.sqlite")
     db = sqlite3.connect(db_loc)
 
     cursor = db.cursor()

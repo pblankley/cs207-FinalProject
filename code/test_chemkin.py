@@ -13,15 +13,80 @@ def test_reaction_rates():
     x = np.array([[1.],[2.],[1.]])
     rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
     assert(np.array_equal(rrr.progress_rates(x,10),[40.0,10.0]))
-    assert(np.array_equal(rrr.reaction_rates(x,10)[0],[-60.0,-70.0,70.0]))
-
-
+    assert(np.array_equal(rrr.reaction_rates(x,10),[-60.0,-70.0,70.0]))
+    
 def test_reaction_coef():
     rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
     assert(rrr.reaction_coefs(900)[0][0]==0.00044989777442266471)
     assert(rrr.reaction_coefs(900)[1][0]==1.5783556022951033)
 
+def test_reaction_rates_rev():
+    x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    assert(np.isclose(rrr.progress_rates(x,750), [-3.43641832e+16, -5.88589924e+11, 1.36640381e+12,  \
+                                                 -5.51788793e+14, 1.45474612e+13,  6.75189291e+13, \
+                                                 1.62500000e+13, 7.82443985e+12, 2.55000887e+13,   \
+                                                 2.69382512e+13, 2.84197199e+12]).all())
+    assert(np.isclose(rrr.reaction_rates(x,750),[3.42304562795e16,-3.38308977852e16,-3.52979102957e+16, \
+                                      4.07078984572e+13,5.86479724945e+14,3.44028050967e+16, \
+                                      -7.63606068937e+13,-5.52803118677e+13]).all())
 
+def test_reaction_coef_rev():
+    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    assert(np.isclose(rrr.reaction_coefs(200)[0][0], 19066566282.668961))
+    assert(np.isclose(rrr.reaction_coefs(200)[0][1], 2.43147163435558e+27))
+
+def test_reaction_rates_rev_low():
+    x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    try: 
+        rrr.progress_rates(x,190)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.reaction_rates(x,190)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.reaction_rates(x,10)
+    except FloatingPointError as err:
+        assert(type(err)==FloatingPointError)
+    # bonus test
+    try: 
+        rrr.reaction_rates(x,'f')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.progress_rates(x,'f')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+       
+def test_reaction_rates_rev_high():
+    x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    try: 
+        rrr.progress_rates(x,3501)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.reaction_rates(x,10000)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.reaction_rates(x,float('inf'))
+    except FloatingPointError as err:
+        assert(type(err)==FloatingPointError) 
+    # bonus test
+    try: 
+        rrr.reaction_rates('12,34,5,2,1',1300)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try: 
+        rrr.progress_rates('12,34,5,2,1',1300)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+        
+test_reaction_rates_rev_high()
 def test_set_params():
     rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
     rrr.reaction_coefs(900)
@@ -88,8 +153,8 @@ def test_progress_rate_T_error_2():
     rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
     try:
         rrr.reactions[0].progress_rate(np.array([[1],[2],[3]]), 'f')
-    except TypeError as err:
-        assert (type(err) == TypeError)
+    except ValueError as err:
+        assert (type(err) == ValueError)
 
 def test_progress_rate_T_error_3():
     rrr = ReactionSet('test_xmls/reaction_rate_1.xml')

@@ -9,6 +9,7 @@ before_install:
 services:
     - sqlite3
 env:
+    - TEST_DIR=code/supporting
     - TEST_DIR=code 
 script:
     - cd $TEST_DIR && py.test

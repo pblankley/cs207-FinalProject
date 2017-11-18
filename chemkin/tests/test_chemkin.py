@@ -2,27 +2,32 @@
 # -*- coding: utf-8 -*-
 """
     Created on Mon Oct 16 17:12:32 2017
-    
+
     @author: paulblankley
     """
 import numpy as np
-from chemkin import ReactionSet 
+import os
+from chemkin import ReactionSet
 
-# LINE 249, 377
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def test_reaction_rates():
     x = np.array([[1.],[2.],[1.]])
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     assert(np.array_equal(rrr.progress_rates(x,10),[40.0,10.0]))
     assert(np.array_equal(rrr.reaction_rates(x,10),[-60.0,-70.0,70.0]))
-    
+
 def test_reaction_coef():
-    rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_coef_1.xml')
+    rrr = ReactionSet(path)
     assert(rrr.reaction_coefs(900)[0][0]==0.00044989777442266471)
     assert(rrr.reaction_coefs(900)[1][0]==1.5783556022951033)
 
 def test_reaction_rates_rev():
     x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
-    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev.xml')
+    rrr = ReactionSet(path)
     assert(np.isclose(rrr.progress_rates(x,750), [-3.43641832e+16, -5.88589924e+11, 1.36640381e+12,  \
                                                  -5.51788793e+14, 1.45474612e+13,  6.75189291e+13, \
                                                  1.62500000e+13, 7.82443985e+12, 2.55000887e+13,   \
@@ -32,90 +37,97 @@ def test_reaction_rates_rev():
                                       -7.63606068937e+13,-5.52803118677e+13]).all())
 
 def test_reaction_coef_rev():
-    rrr = ReactionSet('test_xmls/rxns_rev.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev.xml')
+    rrr = ReactionSet(path)
     assert(np.isclose(rrr.reaction_coefs(200)[0][0], 19066566282.668961))
     assert(np.isclose(rrr.reaction_coefs(200)[0][1], 2.43147163435558e+27))
 
 def test_reaction_rates_rev_low():
     x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
-    rrr = ReactionSet('test_xmls/rxns_rev.xml')
-    try: 
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev.xml')
+    rrr = ReactionSet(path)
+    try:
         rrr.progress_rates(x,190)
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.reaction_rates(x,190)
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.reaction_rates(x,10)
     except FloatingPointError as err:
         assert(type(err)==FloatingPointError)
     # bonus test
-    try: 
+    try:
         rrr.reaction_rates(x,'f')
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.progress_rates(x,'f')
     except ValueError as err:
         assert(type(err)==ValueError)
-       
+
 def test_reaction_rates_rev_high():
     x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
-    rrr = ReactionSet('test_xmls/rxns_rev.xml')
-    try: 
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev.xml')
+    rrr = ReactionSet(path)
+    try:
         rrr.progress_rates(x,3501)
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.reaction_rates(x,10000)
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.reaction_rates(x,float('inf'))
     except FloatingPointError as err:
-        assert(type(err)==FloatingPointError) 
+        assert(type(err)==FloatingPointError)
     # bonus test
-    try: 
+    try:
         rrr.reaction_rates('12,34,5,2,1',1300)
     except ValueError as err:
         assert(type(err)==ValueError)
-    try: 
+    try:
         rrr.progress_rates('12,34,5,2,1',1300)
     except ValueError as err:
         assert(type(err)==ValueError)
-        
-test_reaction_rates_rev_high()
+
 def test_set_params():
-    rrr = ReactionSet('test_xmls/reaction_coef_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_coef_1.xml')
+    rrr = ReactionSet(path)
     rrr.reaction_coefs(900)
     rrr.set_params(1,k=10,coeftype='Constant')
     assert(rrr.reaction_coefs(900)[1][0]==10.0)
 
 def test_init_value_error(): # Hits test in get_reaction
     try:
-        rrr = ReactionSet('test_xmls/reaction_init_value_1.xml')
+        path = os.path.join(BASE_DIR, 'test_xmls/reaction_init_value_1.xml')
+        rrr = ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
 
 def test_init_A_error():
     try:
-        rrr = ReactionSet('test_xmls/reaction_init_value_2.xml')
+        path = os.path.join(BASE_DIR, 'test_xmls/reaction_init_value_2.xml')
+        rrr = ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
 
 def test_coef_type_error():
     try:
-        rrr = ReactionSet('test_xmls/reaction_init_type_1.xml')
+        path = os.path.join(BASE_DIR, 'test_xmls/reaction_init_type_1.xml')
+        rrr = ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
 
 def test_T_val_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     T = -1
     try:
         rrr.reactions[0].reaction_coef(T)
@@ -124,16 +136,18 @@ def test_T_val_error():
 
 
 def test_T_type_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     T = 'fsag'
     try:
         rrr.reactions[0].reaction_coef(T)
     except TypeError as err:
         assert(type(err) == TypeError)
-        
+
 
 def test_progress_rate_x_shape_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].progress_rate(np.array([[1],[2],[3],[4]]),1)
     except ValueError as err:
@@ -142,7 +156,8 @@ def test_progress_rate_x_shape_error():
 
 
 def test_progress_rate_T_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].progress_rate(np.array([[1],[2],[3]]),-144)
     except ValueError as err:
@@ -150,21 +165,24 @@ def test_progress_rate_T_error():
 
 
 def test_progress_rate_T_error_2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].progress_rate(np.array([[1],[2],[3]]), 'f')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_progress_rate_T_error_3():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].progress_rate(np.array([[1],[2],[3]]), [1,2,3])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_reaction_rate_x_shape_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].reaction_rate(np.array([[1],[2],[3],[4]]),1)
     except ValueError as err:
@@ -172,14 +190,16 @@ def test_reaction_rate_x_shape_error():
 
 
 def test_reaction_rate_T_error():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].reaction_rate(np.array([[1],[2],[3]]),-144)
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_reaction_rate_T_error_2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0].reaction_rate(np.array([[1],[2],[3]]), 'f')
     except ValueError as err:
@@ -187,16 +207,16 @@ def test_reaction_rate_T_error_2():
 
 
 def test_arrhenius_k_overflow():
-    rrr = ReactionSet('test_xmls/reaction_arr_over_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_arr_over_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0]._arrhenius(100)
     except OverflowError as err:
         assert (type(err) == OverflowError)
 
-test_arrhenius_k_overflow()
-
 def test_mod_arrhenius_k_overflow():
-    rrr = ReactionSet('test_xmls/reaction_arr_over_2.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_arr_over_2.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.reactions[0]._mod_arrhenius(100)
     except OverflowError as err:
@@ -204,83 +224,94 @@ def test_mod_arrhenius_k_overflow():
 
 
 def test_set_param_error_A_type():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, A = 'f')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_set_param_error_A_type2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, A = [1,2])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_set_param_error_b_type():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, b = [1,2])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_set_param_error_b_type2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(1, b = 'f')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_set_param_error_E_type():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, E = [1,2,3])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_set_param_error_E_type2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(1, E = 'sefg')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_set_param_error_R_type():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, R = [1,2,33])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_set_param_error_R_type2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(1, R = 'setttg')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_set_param_error_k_type():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(0, k = [-1,2,33])
     except TypeError as err:
         assert (type(err) == TypeError)
 
 def test_set_param_error_k_type2():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(1, k = 'seyretttg')
     except ValueError as err:
         assert (type(err) == ValueError)
 
 def test_set_param_error_coeftype():
-    rrr = ReactionSet('test_xmls/reaction_rate_1.xml')
+    path = os.path.join(BASE_DIR, 'test_xmls/reaction_rate_1.xml')
+    rrr = ReactionSet(path)
     try:
         rrr.set_params(1, coeftype = 'seyretttg')
     except ValueError as err:
         assert (type(err) == ValueError)
 
-# Parser section of testing 
+# Parser section of testing
 ## UPDATE FOR NEW PARSER
 ## UPDATE the expected dict to match the output
 def test_working_xml():
@@ -293,7 +324,8 @@ def test_working_xml():
                     'vprime': np.array([[0.],[0.],[1.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[0.],[0.],[1.],[0.]])}],\
                     'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} \
 
-    actual_dict = ReactionSet("test_xmls/rxns.xml").get_params()
+    path = os.path.join(BASE_DIR, "test_xmls/rxns.xml")
+    actual_dict = ReactionSet(path).get_params()
     expected_species = np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])
 
     # Test for each reactions relevant information
@@ -329,7 +361,8 @@ def test_working_xml():
 def test_xml_file_not_found():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/the_ghost_of_files.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/the_ghost_of_files.xml")
+        ReactionSet(path)
     except FileNotFoundError as err:
         assert(type(err)==FileNotFoundError)
 
@@ -337,7 +370,8 @@ def test_xml_file_not_found():
 def test_empty_xml_file():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_empty_file.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_empty_file.xml")
+        ReactionSet(path)
     except FileNotFoundError as err:
         assert(type(err)==FileNotFoundError)
 
@@ -345,7 +379,8 @@ def test_empty_xml_file():
 def test_missing_arrhenius_parameters():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_arrhenius_parameters.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_arrhenius_parameters.xml")
+        ReactionSet(path)
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -353,7 +388,8 @@ def test_missing_arrhenius_parameters():
 def test_missing_constant_parameters():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_constant_parameters.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_constant_parameters.xml")
+        ReactionSet(path)
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -361,7 +397,8 @@ def test_missing_constant_parameters():
 def test_missing_modified_arrhenius_parameters():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_modified_arrhenius_parameters.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_modified_arrhenius_parameters.xml")
+        ReactionSet(path)
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -369,7 +406,8 @@ def test_missing_modified_arrhenius_parameters():
 def test_missing_reactants():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_reactants.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_reactants.xml")
+        ReactionSet(path)
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -377,7 +415,8 @@ def test_missing_reactants():
 def test_missing_reactions():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_reactions.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_reactions.xml")
+        ReactionSet(path)
     except ValueError as err:
         assert(type(err)==ValueError)
 
@@ -385,7 +424,8 @@ def test_missing_reactions():
 def test_missing_species():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_missing_species.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_missing_species.xml")
+        ReactionSet(path)
     except AttributeError as err:
         assert(type(err)==AttributeError)
 
@@ -393,7 +433,8 @@ def test_missing_species():
 def test_unexpected_reactant():
     # Test for an empty xml file
     try:
-        ReactionSet("test_xmls/rxns_test_unexpected_reactant.xml")
+        path = os.path.join(BASE_DIR,"test_xmls/rxns_test_unexpected_reactant.xml")
+        ReactionSet(path)
     except ValueError as err:
         assert(type(err)==ValueError)
 
@@ -402,21 +443,24 @@ def test_unexpected_reactant():
 def test_reversible_missing_tag():
     # Test for missing reversible tag
     try:
-        ReactionSet("test_xmls/rxns_test_reversible_missing_tag.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_reversible_missing_tag.xml")
+        ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
 def test_type_missing_tag():
     # Test for missing type tag
     try:
-        ReactionSet("test_xmls/rxns_test_type_missing_tag.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_type_missing_tag.xml")
+        ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
 def test_reversible_tag_error():
     # Test for invalid reversible tag attribute: i.e. not yes nor no
     try:
-        ReactionSet("test_xmls/rxns_test_reversible_tag_error.xml")
+        path = os.path.join(BASE_DIR, "test_xmls/rxns_test_reversible_tag_error.xml")
+        ReactionSet(path)
     except ValueError as err:
         assert(type(err) == ValueError)
 
@@ -431,9 +475,10 @@ def test_reversible_input():
                     'vprime': np.array([[0.],[1.],[0.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[1.],[0.],[0.],[0.]])},\
                    {'reversible': False, 'coeftype': 'Constant', 'A': 0, 'b': 0, 'E': 0, 'k': 1000.0, \
                     'vprime': np.array([[0.],[0.],[1.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[0.],[0.],[1.],[0.]])}],\
-                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} \
+                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} 
 
-    actual_dict = ReactionSet("test_xmls/rxns_test_reversible_input.xml").get_params()
+    path = os.path.join(BASE_DIR, "test_xmls/rxns_test_reversible_input.xml")
+    actual_dict = ReactionSet(path).get_params()
 
     # Test for each reactions relevant information
     for index, expected_dict_index in enumerate(expected_dict['reactions']):

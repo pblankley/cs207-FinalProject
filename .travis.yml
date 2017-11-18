@@ -3,10 +3,11 @@ python:
     - "3.5"
 install:
     - pip install matplotlib
-    - pip install sqlite3
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+services:
+    - sqlite3
 env:
     - TEST_DIR=code 
 script:

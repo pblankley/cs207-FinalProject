@@ -22,7 +22,7 @@
         </reaction>
 
         <!-- reaction 02 -->
-        <reaction reversible="Yes" type="Elementary" id="reaction02">
+        <reaction reversible="yEs" type="Elementary" id="reaction02">
             <equation>H2 + O =] OH + H</equation>
             <rateCoeff>
                 <modifiedArrhenius>
@@ -36,7 +36,7 @@
         </reaction>
 
         <!-- reaction 03 -->
-        <reaction reversible="no" type="Elementary" id="reaction03">
+        <reaction reversible="nO" type="Elementary" id="reaction03">
             <equation>H2 + OH =] H2O + H</equation>
             <rateCoeff>
                 <Constant>

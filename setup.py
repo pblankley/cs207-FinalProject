@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name = 'chemkin207',
-    packages = ['chemkin207', 'simplestatistics.statistics'],
+    packages = ['chemkin'],
     version = '0.1.0',
     description = 'Simple chemical kinetics library.',
     author = 'Paul Blankley, Ryan Janssen, Boyuan Sun',

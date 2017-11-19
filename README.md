@@ -75,6 +75,34 @@ __*Raises*__:
 </blockquote>
 <br>
 
+#### 3.2.2 reaction_rates(self,x,T):
+This function calculates the reaction rates of each reaction in the set of the following form:
+                    V'11*A + V'21*B -> V''31*C
+                    V'32*C -> V'12*A + V''22*B
+It takes in the vectors v', v'' from the Reaction class and x in the order [[A],[B],[C]].
+<blockquote>
+
+
+
+__*Args*__: 
+* x; vector, numpy array (or list) of length equal to the number of reactants in the system of equations.
+* T; float, the strictly positive temperature 
+
+__*Returns*__: 
+* vector of floats; the reaction rate for each equation
+
+__*Raises*__: 
+* None
+
+Implementation Example:
+```
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_rate_1.xml')
+    >>> list(rrr.reaction_rates(np.array([[1.],[2.],[1.]]),10))
+    [-60.0, -70.0, 70.0]```
+</blockquote>
+<br>
+
+
 #### 3.2.2 reaction_coefs(self, T)
 Sets reaction coefficients for the given float temperature T.  May be used externally but more commonly called by the class' own function progress_rate.
 <blockquote>
@@ -104,74 +132,38 @@ Implementation Example:
 </blockquote>
 <br>
         
-#### 3.2.3 progress_rate(self, x, T):
-This function calculates the progress rate $\omega$ of a reaction of the following form:
+
+#### 3.2.3 progress_rates(self, x, T):
+This function calculates the progress rates *omega* of the reactions of the following form:
 
                     V'11*A + V'21*B -> V''31*C
                 
                 V'12*A + V'32*C -> V''22*B + V''32*C
                 
-It takes in the vectors v', v'' and x in the order [[A],[B],[C]].
+It takes in the concentration vectors and temperature and, and reaction coefficients from its internal reaction database.
 <blockquote>
 
 
 
 __*Args*__: 
-* v',v''; matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.              
-* x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
+* x; vector of concentrations.  Numpy array (or list of lists) of length equal to the number of reactants in the system of equations. 
+* T; temperature of the reaction
 
 __*Returns*__: 
 * list of floats; the progress rate of the reaction for each equation
 
 __*Raises*__: 
-* ValueError if the shapes of the v matrices are not equal
+* None
 
 Implementation example:
 ```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.progress_rate(np.array([[1.],[2.],[1.]]),10)
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_rate_1.xml')
+    >>> list(rrr.progress_rates(np.array([[1.],[2.],[1.]]),10))
     [40.0, 10.0]
 ```
 </blockquote>
 <br>
        
-#### 3.2.4 reaction_rate(self,x,T):
-This function calculates the reaction rate of a reaction of the following form:
-                    V'11*A + V'21*B -> V''31*C
-                    V'32*C -> V'12*A + V''22*B
-It takes in the vectors v', v'' from the class and x in the order [[A],[B],[C]].
-<blockquote>
-
-
-
-__*Args*__: 
-* x; vector, numpy array (or list) of length equal to the number of reactants in the system of equations.
-* T; float, the strictly positive temperature 
-
-__*Returns*__: 
-* vector of floats; the reaction rate for each equation
-
-__*Raises*__: 
-* ValueError when temp is less than 0
-
-Implementation Example:
-```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [float('nan'),float('nan')], \
-                'b': [float('nan'),float('nan')], 'E': [float('nan'),float('nan')], \
-                'k': [10,10], 'coeftype': ['Constant','Constant']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_rate(np.array([[1.],[2.],[1.]]),10)
-    [-60.0, -70.0, 70.0]
-```
-</blockquote>
-<br>
 
 #### 3.2.5 set_params(self,idx,A=None,b=None,E=None,R=None, k=None, coeftype=None):
 This function takes inputs of the parameters you want to set for reaction coefficient calculations.

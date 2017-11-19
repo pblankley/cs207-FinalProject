@@ -11,7 +11,7 @@ setup(
     url = 'https://github.com/cs207-g1/cs207-FinalProject',
     download_url = 'https://github.com/cs207-g1/cs207-FinalProject/tarball/0.1.0',
     keywords = ['chemical kinetics'],
-    license='MIT'
+    license='MIT',
     classifiers = [
         'Programming Language :: Python :: 3',
 	'Programming Language :: Python :: 3.3',

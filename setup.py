@@ -13,6 +13,8 @@ setup(
     download_url = 'https://github.com/cs207-g1/cs207-FinalProject/tarball/0.1.2',
     keywords = ['chemical kinetics'],
     license='MIT',
+    test_suite='nose_collector',
+    tests_require=['nose'],
     classifiers = [
         'Programming Language :: Python :: 3',
 	'Programming Language :: Python :: 3.3',

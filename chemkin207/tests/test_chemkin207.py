@@ -7,7 +7,7 @@
     """
 import numpy as np
 import os
-from chemkin import ReactionSet
+from chemkin207 import ReactionSet
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -475,7 +475,7 @@ def test_reversible_input():
                     'vprime': np.array([[0.],[1.],[0.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[1.],[0.],[0.],[0.]])},\
                    {'reversible': False, 'coeftype': 'Constant', 'A': 0, 'b': 0, 'E': 0, 'k': 1000.0, \
                     'vprime': np.array([[0.],[0.],[1.],[1.],[0.],[0.]]), 'v2prime': np.array([[1.],[0.],[0.],[0.],[1.],[0.]])}],\
-                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])} 
+                    'species': np.array(['H', 'O', 'OH', 'H2', 'H2O', 'O2'])}
 
     path = os.path.join(BASE_DIR, "test_xmls/rxns_test_reversible_input.xml")
     actual_dict = ReactionSet(path).get_params()

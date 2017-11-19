@@ -15,8 +15,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Intended Audience :: Science/Research',
         'Operating System :: MacOS',
-        'Operating System :: Unix',
-	'Operating System :: Linux',
+        'Operating System :: Unix',,
 	'Operating System :: Windows'
         ]
 )

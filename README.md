@@ -383,6 +383,8 @@ __*Raises*__:
 Function only available for the ReversibleReaction subclass.<br><br>
 This function gets the NASA coefficients for a specific temperature from the internal SQL database COEF.sqlite.
 <blockquote>
+
+
 __*Args*__: 
 * T; float, the strictly positive temperature in Kelvin
 
@@ -394,6 +396,45 @@ __*Raises*__:
 * NotImplementedError if called by parent class Reaction() or IrreversibleReaction
 </blockquote>
 <br>
+
+
+#### 3.3.8 get_query(self, cursor, T)
+Function only available for the ReversibleReaction subclass.<br><br>
+This function gets the proper query to use to query the NASA coefficient SQLite database. It also checks for invalid temoeratures in the given value.
+<blockquote>
+
+
+__*Args*__: 
+* cursor; cursor for the database that holds the NASA coefficients
+* T; float, the strictly positive temperature in Kelvin
+
+__*Returns*__: 
+* query; string, response to database query
+
+__*Raises*__: 
+* ValueError ValueError if the temperature is either above the allowable max value or below the min allowable value for the NASA coefficient database.
+* NotImplementedError if called by parent class Reaction() or IrreversibleReaction
+</blockquote>
+<br>
+
+
+#### 3.3.9 reaction_coef_backward(self, T)
+Function only available for the ReversibleReaction subclass.<br><br>
+This function gets the backward coefficients for a reversible reaction at the given temperature.
+<blockquote>
+
+
+__*Args*__: 
+* T; float, the strictly positive temperature in Kelvin
+
+__*Returns*__: 
+* kb; float, the backwards reaction coefficient.
+
+__*Raises*__: 
+* NotImplementedError if called by parent class Reaction() or IrreversibleReaction
+</blockquote>
+<br>
+
 
 ## 4.0 Sample .xml format
 All .xml reaction files should follow the sample format used below.  Source and Designer of this format is David Sondak, Harvard University CS207:

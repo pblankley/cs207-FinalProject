@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name = 'chemkin207',
     packages = ['chemkin'],
-    version = '0.1.0',
+    version = '0.1.1',
     description = 'Simple chemical kinetics library.',
     author = 'Paul Blankley, Ryan Janssen, Boyuan Sun',
     author_email = 'pblankley@g.harvard.edu',
@@ -19,6 +19,6 @@ setup(
 	'Programming Language :: Python :: 3.5',
 	'Programming Language :: Python :: 3.6',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License''
+        'License :: OSI Approved :: MIT License'
         ]
 )

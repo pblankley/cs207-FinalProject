@@ -6,8 +6,11 @@ install:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+services:
+    - sqlite3
 env:
-    - TEST_DIR=code 
+    - TEST_DIR=chemkin
+    - TEST_DIR=chemkin/tests 
 script:
     - cd $TEST_DIR && py.test
 after_success:

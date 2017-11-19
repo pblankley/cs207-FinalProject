@@ -22,24 +22,39 @@ class ReactionSet:
     value NaN. Coeftype is a list of strings containing the type of reaction.
 
     ----------
-    Args: param_dict; where param_dict is the output from the parser function.
+    Args: xml_doc; where xml_doc is the reaction definition xml.
 
     ----------
     Methods:
-        reaction_coef(Temperature); Returns the 'k' reaction coefficients for
-                                    each reaction in the system
+        reaction_rates(self,x,T): where x is the vector of concentrations of the system and
+                            T is the temperature the system of reactions occurs at.
+                            Gets reaction rates from reaction classes
 
-        progress_rate(x, T); where x is the vector of concentrations of the system and
-                            T is the temperature the system of reactions occurs at. Returns
-                            the 'w' progress rate for each reaction in the system.
+        reaction_coef(Temperature); where Temperature is the specified temperature.
+                            Returns the 'k' reaction coefficients for each reaction
+                            in the system
+                            (wrapper)
 
-        reaction_rate(x, T); where x is the vector of concentrations of the system and
-                            T is the temperature the system of reactions occurs at. Returns
-                            the 'f' reaction rate for each reaction in the system.
+        progress_rates(x, T); where x is the vector of concentrations of the system and
+                            T is the temperature the system of reactions occurs at. Gets
+                            progress rates from reaction classes for each reaction in
+                            the system
+                            (wrapper)
+
+        reaction_coefs(T); where T is the temperature the system of reactions occurs at.
+                            Gets reaction coefficients from Reactions class
+                            (wrapper)
+
+        get_params(); Returns the current parameters of the reaction (in dict)
+
         set_params(idx, **kwargs); where you specify idx to be the index of the reaction
                             you want to change the parameters for and the keyword
                             indicates the parameter you want to change.
                             Options to change are: {A,b,E,R,k,coeftype}
+
+        get_reactions(idx, name); where name is the name of the input xml.
+                            Parses the input xml and returns the reaction data in the
+                            form of a dictionary.
     =========
     Examples:
     # Example with the reaction rate

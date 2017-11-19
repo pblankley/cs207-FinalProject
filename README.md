@@ -304,6 +304,8 @@ __*Raises*__:
 #### 3.3.3 _mod_arrhenius(self, T):
 This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the modified Arrhenius reaction rate coefficient.
 <blockquote>
+
+
 __*Args*__: 
 * T, float; temperature (gets args from class).
 
@@ -319,6 +321,8 @@ __*Raises*__:
 #### 3.3.4 reaction_coef_forward(self, T):
 Set reaction coefficients for the given float T.  Assigned reaction rate as Arrhennius, Modified Arrhennius, or Constant based on instance args.
 <blockquote>
+
+
 __*Args*__: 
 * T, float; temperature (gets args from class).
 
@@ -333,6 +337,8 @@ __*Raises*__:
 #### 3.3.5 reaction_rate(self, x_in, T):
 Set reaction coefficients for the given float T.  Assigned reaction rate as Arrhennius, Modified Arrhennius, or Constant based on instance args.
 <blockquote>
+
+
 __*Args*__: 
 * x_in; vector, numpy array (or list) of length equal to the number of reactants in the system of equations.
 * T; float, the strictly positive temperature in Kelvin
@@ -355,6 +361,8 @@ This function calculates the progress rates *omega* of the reactions of the foll
                 
 It takes in the concentration vectors and temperature and, and reaction coefficients from its internal reaction database.
 <blockquote>
+
+
 __*Args*__: 
 * v',v''; matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.
 * x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.

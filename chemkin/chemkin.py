@@ -450,9 +450,9 @@ class Reaction:
             print('Warning: You are using modified arrhenius with b=0')
         k = self.A*(T**self.b)*np.exp(-self.E/(self.R*T))
         if k == float('inf'):
-            raise OverflowError('overflow error in evalutation of constant')
+            raise OverflowError('overflow error in evaluation of constant')
         if k <= np.finfo(float).eps:
-            raise FloatingPointError('underflow error in evalutation of constant')
+            raise FloatingPointError('underflow error in evaluation of constant')
         return k
 
     def reaction_coef(self,T):

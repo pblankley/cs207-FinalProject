@@ -92,7 +92,8 @@ __*Returns*__:
 * vector of floats; the reaction rate for each equation
 
 __*Raises*__: 
-* None
+* None (although reaction classes may raise exceptions - see 3.3 below)
+
 
 Implementation Example:
 ```
@@ -122,10 +123,11 @@ __*Args*__:
 * T; temperature of the reaction
 
 __*Returns*__: 
-* list of floats; the progress rate of the reaction for each equation
+* rates; list of floats; the progress rate of the reaction for each equation
 
 __*Raises*__: 
-* None
+* None (although reaction classes may raise exceptions - see 3.3 below)
+
 
 Implementation example:
 ```
@@ -137,8 +139,7 @@ Implementation example:
 <br>
        
 #### 3.2.4 reaction_coefs(self, T)
-Sets reaction coefficients for the given float temperature T.  May be used externally but more commonly called by the class' own function progress_rate.
-<blockquote>
+Sets reaction coefficients for each reaction (stored internally and also specified at initialization) for the given float temperature T.  <blockquote>
 
 
 
@@ -146,32 +147,50 @@ __*Args*__:
 * T; float; the temperature for all reactions
 
 __*Returns*__: 
-* None
+* coefs; np array of floats; array containing each reaction coefficient k
 
 __*Raises*__: 
-* 
+* None (although reaction classes may raise exceptions - see 3.3 below)
 
 Implementation Example:
 ```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 1.5783556022951033]
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
+    >>> rrr.reaction_coefs(900)[0][0]
+    0.00044989777442266471
+
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
+    >>> rrr.reaction_coefs(900)[1][0]
+    1.5783556022951033
 ```
 </blockquote>
 <br>
 
-#### 3.2.5 set_params(self,idx,A=None,b=None,E=None,R=None, k=None, coeftype=None):
+#### 3.2.5 get_params(self)
+Returns parameter set for all reactions previously specified in the instance (either at init or later via set_params)<blockquote>
+
+
+__*Args*__: 
+* None
+
+__*Returns*__: 
+* param_dict; list of dictionaries for each reaction in the instance
+
+__*Raises*__: 
+* None
+
+</blockquote>
+<br>
+
+
+
+#### 3.2.6 set_params(self,idx,A=None,b=None,E=None,R=None, k=None, coeftype=None):
 This function takes inputs of the parameters you want to set for reaction coefficient calculations.
 <blockquote>
 
 
 
 __*Args*__: 
+* idx; int; Index of the reaction for which you wish to set parameters
 * A,b,E,T,R; all floats and optional arguments
 
 __*Returns*__: 
@@ -179,57 +198,21 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError ValueError when any input given a value other than None cannot be cast to a float
+ValueError ValueError when any input given a value other than None cannot be cast to a float
 
 Implementation example:
 ```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
-    >>> w = rrr.reaction_coef(900)
+    >>> rrr = ReactionSet('tests/test_xmls/reaction_coef_1.xml')
+    >>> w = rrr.reaction_coefs(900)
     >>> ww = rrr.set_params(1,k=10, coeftype='Constant')
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 10.0]
+    >>> rrr.reaction_coefs(900)[1][0]
+    10.0
 ```
-</blockquote>
-<br>
-    
-#### 3.2.6 _arrhenius(self, idx, T):
-This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the Arrhenius reaction rate coefficient.
-<blockquote>
-
-
-__*Args*__: 
-* T, float; temperature, (gets args from class).
-
-__*Returns*__: 
-* The float k where k is the reaction rate coefficient.
-
-__*Raises*__: 
-* OverflowError after constant evaluation
-* FloatingPointError after constant evaluation for underflow
-</blockquote>
-<br>
-
-#### 3.2.7 _mod_arrhenius(self, idx, T):
-This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the modified Arrhenius reaction rate coefficient.
-<blockquote>
-__*Args*__: 
-* T, float; temperature (gets args from class).
-
-__*Returns*__: 
-* The float k where k is the reaction rate coefficient.
-
-__*Raises*__: 
-* OverflowError after constant evaluation
-* FloatingPointError after constant evaluation for underflow
 </blockquote>
 <br>
 
 #### 3.2.8 get_reactions(name):
-This function takes in the name of the input xml file, and returns a dictionary of relevant information for a set of chemical reactions.  Note this is a **function** within Chemkin and not a **method** of Reaction.
+This function takes in the name of the input xml file, and returns a dictionary of relevant information for a set of chemical reactions.
 <blockquote>
 
 
@@ -280,6 +263,57 @@ Implementation example:
 
 ### 3.3 Method/Function details – Reaction/ReversibleReaction/IrreversibleReaction class family
 
+Reaction, ReversibleReaction, and IrreversibleReaction are a family of internal classes use to calculate reaction rates (via the Reaction class wrappers).  Reaction is the parent class of ReversibleReaction and Irreversible reaction, although generally ReversibleReaction and IrreversibleReaction will be instantiated.
+
+#### 3.3.1 Reaction/ReversibleReaction/IrreversibleReaction(self, reactionDict, species) ReactionSet(xml_doc) *(class initialization)*:
+Instantiates the respective reaction class.
+<blockquote>
+
+
+__*Args*__: 
+* reactiondict; dict, A single entry in the reaction .
+
+__*Returns*__: 
+* The float k where k is the reaction rate coefficient.
+
+__*Raises*__: 
+* OverflowError after constant evaluation
+* FloatingPointError after constant evaluation for underflow
+</blockquote>
+<br>
+
+    
+#### 3.3.2 _arrhenius(self, idx, T):
+This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the Arrhenius reaction rate coefficient.
+<blockquote>
+
+
+__*Args*__: 
+* T, float; temperature, (gets args from class).
+
+__*Returns*__: 
+* The float k where k is the reaction rate coefficient.
+
+__*Raises*__: 
+* OverflowError after constant evaluation
+* FloatingPointError after constant evaluation for underflow
+</blockquote>
+<br>
+
+#### 3.3.3 _mod_arrhenius(self, idx, T):
+This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the modified Arrhenius reaction rate coefficient.
+<blockquote>
+__*Args*__: 
+* T, float; temperature (gets args from class).
+
+__*Returns*__: 
+* The float k where k is the reaction rate coefficient.
+
+__*Raises*__: 
+* OverflowError after constant evaluation
+* FloatingPointError after constant evaluation for underflow
+</blockquote>
+<br>
 
 
 ## 4.0 Sample .xml format

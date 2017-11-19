@@ -460,10 +460,9 @@ class Reaction:
         return self.reaction_coef_forward(T), self.reaction_coef_backward(T)
 
     def reaction_coef_forward(self, T):
-        """Set reaction coefficients for the given float T and mt (model type).
+        """Set reaction coefficients for the given float T.
         -------
         Args: T; float; the temperature for all reactions
-              mt; list of strings, the model types for each part of the reaction
         -------
         Returns: None
         -------
@@ -505,10 +504,10 @@ class Reaction:
         -------
         Returns: vector of floats; the reaction rate for the equation
         -------
-        Raises: ValueError when temp is less than 0 or x is not (mx1)
+        Raises: ValueError when temp is less than 0 or x is not of shape (mx1)
         =======
 
-        Doctests for this method in class
+        Doctests for this method in ReactionSet class
 
         """
         try:

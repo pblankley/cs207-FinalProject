@@ -98,39 +98,11 @@ Implementation Example:
 ```
     >>> rrr = ReactionSet('tests/test_xmls/reaction_rate_1.xml')
     >>> list(rrr.reaction_rates(np.array([[1.],[2.],[1.]]),10))
-    [-60.0, -70.0, 70.0]```
-</blockquote>
-<br>
-
-
-#### 3.2.2 reaction_coefs(self, T)
-Sets reaction coefficients for the given float temperature T.  May be used externally but more commonly called by the class' own function progress_rate.
-<blockquote>
-
-
-
-__*Args*__: 
-* T; float; the temperature for all reactions
-
-__*Returns*__: 
-* None
-
-__*Raises*__: 
-* ValueError when T cannot be cast to a float or T is negative
-
-Implementation Example:
-```
-    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
-    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
-    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
-                'b': [1.2,1.2], 'E': [1.7,1.7], \
-                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
-    >>> rrr = Reaction(pdict)
-    >>> rrr.reaction_coef(900)
-    [0.00044989777442266471, 1.5783556022951033]
+    [-60.0, -70.0, 70.0]
 ```
 </blockquote>
 <br>
+
         
 
 #### 3.2.3 progress_rates(self, x, T):
@@ -164,6 +136,34 @@ Implementation example:
 </blockquote>
 <br>
        
+#### 3.2.4 reaction_coefs(self, T)
+Sets reaction coefficients for the given float temperature T.  May be used externally but more commonly called by the class' own function progress_rate.
+<blockquote>
+
+
+
+__*Args*__: 
+* T; float; the temperature for all reactions
+
+__*Returns*__: 
+* None
+
+__*Raises*__: 
+* 
+
+Implementation Example:
+```
+    >>> vp = np.array([[1.,2.],[2.,0.],[0.,2.]])
+    >>> vpp = np.array([[0.,0.],[0.,1.],[2.,1.]])
+    >>> pdict = {'vprime': vp, 'v2prime': vpp, 'A': [.00045,.00045], \
+                'b': [1.2,1.2], 'E': [1.7,1.7], \
+                'k': [float('nan'),float('nan')], 'coeftype': ['Arrhenius','modifiedArrhenius']}
+    >>> rrr = Reaction(pdict)
+    >>> rrr.reaction_coef(900)
+    [0.00044989777442266471, 1.5783556022951033]
+```
+</blockquote>
+<br>
 
 #### 3.2.5 set_params(self,idx,A=None,b=None,E=None,R=None, k=None, coeftype=None):
 This function takes inputs of the parameters you want to set for reaction coefficient calculations.

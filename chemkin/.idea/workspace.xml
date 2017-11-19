@@ -14,8 +14,8 @@
       <file leaf-file-name="chemkin.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chemkin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4820">
-              <caret line="84" column="0" lean-forward="false" selection-start-line="84" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+            <state relative-caret-position="88">
+              <caret line="617" column="56" lean-forward="true" selection-start-line="610" selection-start-column="1" selection-end-line="617" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -33,6 +33,7 @@
       <find>param</find>
       <find>param_dict</find>
       <find>get_Reaction</find>
+      <find>reaction_coef_forwa</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -363,8 +364,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/chemkin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4820">
-          <caret line="84" column="0" lean-forward="false" selection-start-line="84" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+        <state relative-caret-position="88">
+          <caret line="617" column="56" lean-forward="true" selection-start-line="610" selection-start-column="1" selection-end-line="617" selection-end-column="56" />
           <folding />
         </state>
       </provider>

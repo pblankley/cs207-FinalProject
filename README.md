@@ -60,6 +60,8 @@ Data can be input in one of two ways:
 All methods are implemented in the Reaction class, which will contain the necessary parameters to calculate outputs for a specified reaction temperature and species concentrations.
 
 ### 3.2 Method/Function details – ReactionSet class
+Reaction set is intended to be the primary interface for the user.  Using the methods described below, the user can instantiate a set of reactions from an XML and calculate the reaction rates.
+
 
 #### 3.2.1 ReactionSet(xml_doc) *(class initialization)*
 This class represents the reaction tools for a set of elementary reactions.  The class takes in an xml specifying the reaction data on initialization, of form specified in the “xml template” section below.
@@ -198,7 +200,6 @@ __*Returns*__:
 
 __*Raises*__: 
 * ValueError ValueError when any input given a value other than None cannot be cast to a float
-ValueError ValueError when any input given a value other than None cannot be cast to a float
 
 Implementation example:
 ```
@@ -271,19 +272,19 @@ Instantiates the respective reaction class.
 
 
 __*Args*__: 
-* reactiondict; dict, A single entry in the reaction .
+* reactiondict; dict, A single entry that fully specifies the reaction.  Of the same form as a single entry used in ReactionSet.get_reactions() in 3.2.8.
+* species; string, Name of species
 
 __*Returns*__: 
-* The float k where k is the reaction rate coefficient.
+* None (but updates internal parameters)
 
 __*Raises*__: 
-* OverflowError after constant evaluation
-* FloatingPointError after constant evaluation for underflow
+* ValueError if dictionary is not in standard format per 3.2.8
 </blockquote>
 <br>
 
     
-#### 3.3.2 _arrhenius(self, idx, T):
+#### 3.3.2 _arrhenius(self, T):
 This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the Arrhenius reaction rate coefficient.
 <blockquote>
 
@@ -300,7 +301,7 @@ __*Raises*__:
 </blockquote>
 <br>
 
-#### 3.3.3 _mod_arrhenius(self, idx, T):
+#### 3.3.3 _mod_arrhenius(self, T):
 This internal function takes in the parameter T (kelvin temperature) from the class attributes, and it will return a value, k, that is the modified Arrhenius reaction rate coefficient.
 <blockquote>
 __*Args*__: 
@@ -315,6 +316,76 @@ __*Raises*__:
 </blockquote>
 <br>
 
+#### 3.3.4 reaction_coef_forward(self, T):
+Set reaction coefficients for the given float T.  Assigned reaction rate as Arrhennius, Modified Arrhennius, or Constant based on instance args.
+<blockquote>
+__*Args*__: 
+* T, float; temperature (gets args from class).
+
+__*Returns*__: 
+* None
+
+__*Raises*__: 
+* ValueError when T cannot be cast to a float or T is negative
+</blockquote>
+<br>
+
+#### 3.3.5 reaction_rate(self, x_in, T):
+Set reaction coefficients for the given float T.  Assigned reaction rate as Arrhennius, Modified Arrhennius, or Constant based on instance args.
+<blockquote>
+__*Args*__: 
+* x_in; vector, numpy array (or list) of length equal to the number of reactants in the system of equations.
+* T; float, the strictly positive temperature in Kelvin
+
+__*Returns*__: 
+* f; vector of floats, the reaction rate for the equation
+
+__*Raises*__: 
+* ValueError ValueError when temp is less than 0 or x is not of shape (mx1)
+</blockquote>
+<br>
+
+#### 3.3.6 progress_rate(self, x_in, T):
+Function only available for the ReversibleReaction and IrreversibleReaction subclass.<br><br>
+This function calculates the progress rates *omega* of the reactions of the following form:
+
+                    V'11*A + V'21*B -> V''31*C
+                
+                V'12*A + V'32*C -> V''22*B + V''32*C
+                
+It takes in the concentration vectors and temperature and, and reaction coefficients from its internal reaction database.
+<blockquote>
+__*Args*__: 
+* v',v''; matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.
+* x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
+* k; float or list of length n (number of equations), the k constant in the reaction of elementary equations.
+* T; float, the strictly positive temperature in Kelvin
+
+__*Returns*__: 
+* w; list of floats; the progress rate of the reversible or irreversible reaction for each equation
+
+__*Raises*__: 
+* ValueError ValueError if the shapes of the v matrices are not equal or if the x vector is not mx1 or if the value for T cannot be cast to a float.
+* NotImplementedError if called by parent class Reaction()
+</blockquote>
+<br>
+
+
+#### 3.3.7 get_nasa_coefs(self, T)
+Function only available for the ReversibleReaction subclass.<br><br>
+This function gets the NASA coefficients for a specific temperature from the internal SQL database COEF.sqlite.
+<blockquote>
+__*Args*__: 
+* T; float, the strictly positive temperature in Kelvin
+
+__*Returns*__: 
+* out; numpy array mx7, where m is the number of species in the reaction system.
+
+__*Raises*__: 
+* ValueError ValueError if query returns nothing (may be due to improperly structured database COEF.sqlite.
+* NotImplementedError if called by parent class Reaction() or IrreversibleReaction
+</blockquote>
+<br>
 
 ## 4.0 Sample .xml format
 All .xml reaction files should follow the sample format used below.  Source and Designer of this format is David Sondak, Harvard University CS207:

@@ -252,12 +252,12 @@ class ReactionSet:
                                 indicating if the reaction is elementary or not.')
 
             # Check if the reversible tag is yes or no
-            if reversible_attrib not in valid_atrribs:
+            if reversible_attrib.lower() not in valid_atrribs:
                 raise ValueError('Attributes of reversible tag invalid. Hint: check the content of the reversible tag.\
                                  Must be "yes" or "no".')
 
             # Append the list indicating reversible reactions or not
-            if reversible_attrib == 'yes':
+            if reversible_attrib.lower() == 'yes':
                 react['reversible'] = True
             else:
                 react['reversible'] = False

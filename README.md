@@ -510,7 +510,8 @@ Our package would support three new output methodologies:
 3. Tabulation and “pretty print” presentation of numerical findings
 
 #### 5.1.2 How the feature will fit into chemkin207 code base (and package)
-To achieve this, we would create a “wrapper” class around the ReactionSet() class with its own set of methods, built for more 
+To achieve this, we would create a “wrapper” class around the ReactionSet() class with its own set of methods, built for more complex outputs.
+
 The rationale behind this approach is that it would leave the basic ReactionSet() class available for python-level calculations for the user, but more repeatable “range level” scripts could be written to produce outputs for direct export to final documents.
 
 #### 5.1.3 Modules to write/methods to implement
@@ -528,8 +529,9 @@ We would encompass all of the necessary methods into a single class, called Pret
 
 #### 5.1.4 Anticipated usage of new feature
 If a user desired formatted outputs, they would declare an artbitrary number of reactions using the existing ReactionSet class.  They would then instantiate a prettyReaction class instance with the reaction module as an argument.  
+
 At that point, the user would all call all outputs directly from the prettyReaction class.  It would handle the inputs and manage the ReactionSet class to obtain the necessary outputs.
 
 #### 5.1.5 External Dependencies
-We will build the plotting functionality on top of MatplotLib.  The HDF5 outputs will use H5py.  	Each of these libraries is open source, well documented, and accepted as a de facto standard for Python.
+We will build the plotting functionality on top of MatplotLib.  The HDF5 outputs will use H5py.  Each of these libraries is open source, well documented, and accepted as a de facto standard for Python.
 JSON, txt, and CSV outputs will all use native functions from python 3.5.  

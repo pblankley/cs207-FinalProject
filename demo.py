@@ -7,7 +7,7 @@ Created on Mon Oct 16
 """
 
 import numpy as np
-import chemkin as ck
+import chemkin207 as ck
 import os
 
 import matplotlib as mpl
@@ -41,6 +41,7 @@ for i, specie in enumerate(demo_reaction.species):
 
 # Print out the reaction rates for each specie
 reaction_rates = demo_reaction.reaction_rates(concs, 1500)
+reaction_coefs = demo_reaction.reaction_coefs(1500)
 print('The reaction rate for each specie at Temperature {} : '.format(1500))
 for index, specie in enumerate(demo_reaction.get_params()['species']):
     print('specie {} : {}'.format(specie, reaction_rates[index]))

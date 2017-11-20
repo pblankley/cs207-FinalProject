@@ -38,15 +38,19 @@ Chemical reaction rates are discussed [here](https://en.wikipedia.org/wiki/React
 
 ## II. Installation
 
-We plan to migrate the project to the Anaconda cloud with PyPI for future easy install.  For a beta version of the software package, download the chemkin.py file and place the file in your working directory. You can also run the following command to clone the git repo and then move the chemkin module to your working directory.
+Run the following command in Terminal on a Mac or in cmd.exe on a Windows machine.
 
-$ git clone https://github.com/cs207-g1/cs207-FinalProject.git
+$ pip install chemkin207
 
-Once you move chemkin.py to your working directory you can just run:
+After pip finishes installing the package you can run the tests by running the following commands from the command line.
 
-- import chemkin 
+$ python
 
-After that command you will have full access to the module.
+$ >>> import chemkin207
+
+$ >>> chemkin207.test()
+
+This sequence of commands will run the tests for the module and display the output.
 
 ## III. Basic Usage and Examples
 
@@ -59,12 +63,12 @@ Data can be input in one of two ways:
 
 All methods are implemented in the Reaction class, which will contain the necessary parameters to calculate outputs for a specified reaction temperature and species concentrations.
 
-### 3.2 Method/Function details ñ ReactionSet class
+### 3.2 Method/Function details ‚Äì ReactionSet class
 Reaction set is intended to be the primary interface for the user.  Using the methods described below, the user can instantiate a set of reactions from an XML and calculate the reaction rates.
 
 
 #### 3.2.1 ReactionSet(xml_doc) *(class initialization)*
-This class represents the reaction tools for a set of elementary reactions.  The class takes in an xml specifying the reaction data on initialization, of form specified in the ìxml templateî section below.
+This class represents the reaction tools for a set of elementary reactions.  The class takes in an xml specifying the reaction data on initialization, of form specified in the ‚Äúxml template‚Äù section below.
 
 __*Args*__: 
 * param_dict; where param_dict is the output from the parser function.
@@ -262,7 +266,7 @@ Implementation example:
 </blockquote>
 <br>
 
-### 3.3 Method/Function details ñ Reaction/ReversibleReaction/IrreversibleReaction class family
+### 3.3 Method/Function details ‚Äì Reaction/ReversibleReaction/IrreversibleReaction class family
 
 Reaction, ReversibleReaction, and IrreversibleReaction are a family of internal classes use to calculate reaction rates (via the Reaction class wrappers).  Reaction is the parent class of ReversibleReaction and Irreversible reaction, although generally ReversibleReaction and IrreversibleReaction will be instantiated.
 

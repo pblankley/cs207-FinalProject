@@ -494,7 +494,7 @@ All .xml reaction files should follow the sample format used below.  Source and 
 </ctml>
 ```
 ## 5. Future Features
-### 5.1 Chemkin Output Package (prettyChemkin)
+### 5.1 Chemkin Output Package (prettyReaction class)
 #### 5.1.1 Motivation and Description
 Currently the user can use chemkin to calculate reaction rates and produce final numerical output for a given temperature.  However, we expect that the user will often need to translate the reaction rates into a form that can be more easily distributed and dissimilated.  
 For example, one of the common uses of this package will be to publish findings in journals.  For each iteration of the journal writing, the user will need to invest time in producing results, pasting them into the appropriate output, and visualizing them to a high quality standard.

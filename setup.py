@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name = 'chemkin207',
-    packages = ['chemkin207'],
+    packages = ['chemkin207','chemkin207.tests'],
     version = '0.1.4',
     description = 'Simple chemical kinetics library.',
     author = 'Paul Blankley, Ryan Janssen, Boyuan Sun',

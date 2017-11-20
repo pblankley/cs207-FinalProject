@@ -8,7 +8,7 @@ def test():
 	    import pytest
     except ImportError:
 	    raise ImportError("You need pytest>=3.0 to run these tests")
-    cmd = BASE_PATH
+    cmd = [BASE_PATH+'/chemkin207']
     print("running: pytest {}".format(cmd))
     sys.exit(pytest.main(cmd))
 

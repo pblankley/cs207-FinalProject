@@ -45,7 +45,9 @@ $ pip install chemkin207
 After pip finishes installing the package you can run the tests by running the following commands from the command line.
 
 $ python
+
 $ >>> import chemkin207
+
 $ >>> chemkin207.test()
 
 This sequence of commands will run the tests for the module and display the output.

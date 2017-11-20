@@ -38,15 +38,17 @@ Chemical reaction rates are discussed [here](https://en.wikipedia.org/wiki/React
 
 ## II. Installation
 
-We plan to migrate the project to the Anaconda cloud with PyPI for future easy install.  For a beta version of the software package, download the chemkin.py file and place the file in your working directory. You can also run the following command to clone the git repo and then move the chemkin module to your working directory.
+Run the below command on the command line to install the package 
 
-$ git clone https://github.com/cs207-g1/cs207-FinalProject.git
+$ pip install chemkin207
 
-Once you move chemkin.py to your working directory you can just run:
+You can run the tests for the package by running the below commands on the command line.
 
-- import chemkin 
+$ python
+$ >>> import chemkin207
+$ >>> chemkin207.test()
 
-After that command you will have full access to the module.
+You will see the output with the results of the tests.
 
 ## III. Basic Usage and Examples
 
@@ -59,12 +61,12 @@ Data can be input in one of two ways:
 
 All methods are implemented in the Reaction class, which will contain the necessary parameters to calculate outputs for a specified reaction temperature and species concentrations.
 
-### 3.2 Method/Function details ñ ReactionSet class
+### 3.2 Method/Function details ‚Äì ReactionSet class
 Reaction set is intended to be the primary interface for the user.  Using the methods described below, the user can instantiate a set of reactions from an XML and calculate the reaction rates.
 
 
 #### 3.2.1 ReactionSet(xml_doc) *(class initialization)*
-This class represents the reaction tools for a set of elementary reactions.  The class takes in an xml specifying the reaction data on initialization, of form specified in the ìxml templateî section below.
+This class represents the reaction tools for a set of elementary reactions.  The class takes in an xml specifying the reaction data on initialization, of form specified in the ‚Äúxml template‚Äù section below.
 
 __*Args*__: 
 * param_dict; where param_dict is the output from the parser function.
@@ -262,7 +264,7 @@ Implementation example:
 </blockquote>
 <br>
 
-### 3.3 Method/Function details ñ Reaction/ReversibleReaction/IrreversibleReaction class family
+### 3.3 Method/Function details ‚Äì Reaction/ReversibleReaction/IrreversibleReaction class family
 
 Reaction, ReversibleReaction, and IrreversibleReaction are a family of internal classes use to calculate reaction rates (via the Reaction class wrappers).  Reaction is the parent class of ReversibleReaction and Irreversible reaction, although generally ReversibleReaction and IrreversibleReaction will be instantiated.
 
@@ -498,7 +500,7 @@ All .xml reaction files should follow the sample format used below.  Source and 
 #### 5.1.1 Motivation and Description
 Currently the user can use chemkin to calculate reaction rates and produce final numerical output for a given temperature.  However, we expect that the user will often need to translate the reaction rates into a form that can be more easily distributed and dissimilated.  
 For example, one of the common uses of this package will be to publish findings in journals.  For each iteration of the journal writing, the user will need to invest time in producing results, pasting them into the appropriate output, and visualizing them to a high quality standard.
-We propose an additional chemkin feature that would automate these outputs.  Other anticipated ìuse casesî that we would prepare solution for include:
+We propose an additional chemkin feature that would automate these outputs.  Other anticipated ‚Äúuse cases‚Äù that we would prepare solution for include:
 * The user may wish to export the results to more portable output format, such as a .csv, txt., .json or HDF5.
 * The user may be interested in tabulating their data in a repeatable format
 * The user may need to visualize outputs at a range of temperatures rather than a single temperature, and repeatably across a number of reactions
@@ -507,21 +509,21 @@ We propose an additional chemkin feature that would automate these outputs.  Oth
 Our package would support three new output methodologies:
 1. Automated graphing,
 2. Multiple common output formats, and
-3. Tabulation and ìpretty printî presentation of numerical findings
+3. Tabulation and ‚Äúpretty print‚Äù presentation of numerical findings
 
 #### 5.1.2 How the feature will fit into chemkin207 code base (and package)
-To achieve this, we would create a ìwrapperî class around the ReactionSet() class with its own set of methods, built for more complex outputs.
+To achieve this, we would create a ‚Äúwrapper‚Äù class around the ReactionSet() class with its own set of methods, built for more complex outputs.
 
-The rationale behind this approach is that it would leave the basic ReactionSet() class available for python-level calculations for the user, but more repeatable ìrange levelî scripts could be written to produce outputs for direct export to final documents.
+The rationale behind this approach is that it would leave the basic ReactionSet() class available for python-level calculations for the user, but more repeatable ‚Äúrange level‚Äù scripts could be written to produce outputs for direct export to final documents.
 
 #### 5.1.3 Modules to write/methods to implement
 We would encompass all of the necessary methods into a single class, called PrettyReaction().  Pretty reaction would include the following methods:
 * **prettyReaction.tables(ReactionSet, columns, species, comparison_basis)**:
 	Runs comparison tables for reaction rates and progress rates for each specie.  Can compare between species or between multiple reactions.
 * **prettyReaction.prettyOutput(ReactionSet, columns, species, consolidate, format)**:
-	Computes reaction rates for multiple reactions and exports formatted outputs into any of .txt, .csv, .json, or HDF5 format.  Text outputs will be ìpretty printedî for readability and transportability into final documents
+	Computes reaction rates for multiple reactions and exports formatted outputs into any of .txt, .csv, .json, or HDF5 format.  Text outputs will be ‚Äúpretty printed‚Äù for readability and transportability into final documents
 * **prettyReaction.plot(ReactionSet, species, tmin, tmax)**:
-	Calculates each reaction and outputs into a repeatable format.  Would also use internal settings to format the chart ñ these include automatically adding chart elements such as positioning lines for local and global temperature maxima, thresholds indicating minimum acceptable reaction rate, and so on.
+	Calculates each reaction and outputs into a repeatable format.  Would also use internal settings to format the chart ‚Äì these include automatically adding chart elements such as positioning lines for local and global temperature maxima, thresholds indicating minimum acceptable reaction rate, and so on.
 * **prettyReaction.ExportPlotConfig(*args)**:
 	Exports a .json with chart format args to be repeated for future reactions (or sets of reactions)
 * **prettyReaction.ImportPlotConfig(*args)**:

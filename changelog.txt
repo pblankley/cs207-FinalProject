@@ -6,10 +6,10 @@
 
 Initial version of the package with the chemkin module and related test set.
 
-## 0.1.1-0.1.2
+## 0.1.1-0.1.5
 
 Figuring out how to deploy the module with PyPI.
 
-## 0.1.3
+## 0.1.6
 
-Rename the module to chemkin207.
+Rename the module to chemkin207, and add .test() method to run the tests.

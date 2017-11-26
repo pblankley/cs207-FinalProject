@@ -4,6 +4,11 @@ from functools import reduce
 import os
 import xml.etree.ElementTree as ET
 import sqlite3
+import matplotlib as mpl
+#if os.environ.get('DISPLAY','') == '':
+#    print('no display found. Using non-interactive Agg backend')
+#    mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -361,6 +366,80 @@ class ReactionSet:
 
         return reaction_dict
 
+#======================================================================================================================#
+# Graphic and tables
+    def plot(self, query_species, concs, tmin, tmax, precision=1000):
+        """
+
+        :param query_species: str or list of str that wants to query
+        :param concs: concentration of ALL the species
+        :param tmin: query temperature minimum
+        :param tmax: query temperature maximum
+        :param precision: points that np.linspace will use; larger value means more precise plots
+        :return: plot
+        """
+
+        # check if the user passes in a correct type of input for query_species
+        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if isinstance(query_species, list):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # check if the user passes in a correct type of input for the temperature bounds
+        try:
+            tmin = float(tmin)
+        except:
+            raise TypeError('the lower temperature bound should be numeric')
+
+        try:
+            tmax = float(tmax)
+        except:
+            raise TypeError('the upper temperature bound should be numeric')
+
+        # temperature range
+        T_range = np.linspace(tmin, tmax, num=precision)
+
+        # Plot the query specie, either a string or a list
+        if isinstance(query_species, str):
+            # the index of the specie
+            specie_index = list(self.species).index(query_species)
+
+            # reaction rates for the specie at each temperature
+            specie_reaction_rate = []
+
+            # calculate the reaction rate for each temperature
+            for t in T_range:
+                specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
+
+            # make the plot
+            plt.plot(T_range, specie_reaction_rate, label=query_species)
+        else:
+            # the indexes of each query specie
+            specie_indexes = [list(self.species).index(specie) for specie in query_species]
+
+            species_reaction_rates = np.zeros((len(T_range), len(query_species)))
+
+            for t_index, t in enumerate(T_range):
+                for reaction_index, specie_index in enumerate(specie_indexes):
+                    species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                        [specie_index]
+
+            for index, specie in enumerate(query_species):
+                plt.plot(T_range, species_reaction_rates[:, index], label=specie)
+
+        plt.xlabel("Temperature (K)")
+        plt.ylabel("Reaction rate progress")
+        plt.title("Reaction rate of the query species")
+        plt.legend()
+        plt.show()
 
 # Elementary Reaction
 class Reaction:

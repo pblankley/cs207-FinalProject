@@ -368,15 +368,15 @@ class ReactionSet:
 
 #======================================================================================================================#
 # Graphic and tables
-    def plot(self, query_species, concs, tmin, tmax, precision=1000):
+    def plot_rates_against_temparture(self, query_species, concs, tmin, tmax, precision=1000):
         """
-
+        This function plots the reaction rates for each query specie against the temrperature range
         :param query_species: str or list of str that wants to query
-        :param concs: concentration of ALL the species
-        :param tmin: query temperature minimum
-        :param tmax: query temperature maximum
-        :param precision: points that np.linspace will use; larger value means more precise plots
-        :return: plot
+        :param concs: np.array, concentration of ALL the species
+        :param tmin: float, query temperature minimum
+        :param tmax: float, query temperature maximum
+        :param precision: int, points that np.linspace will use; larger value means more precise plots
+        :return: plot of reaction rates against the temperature for each query specie
         """
 
         # check if the user passes in a correct type of input for query_species
@@ -440,6 +440,93 @@ class ReactionSet:
         plt.title("Reaction rate of the query species")
         plt.legend()
         plt.show()
+
+    def find_rates(self, query_species, concs, tmin, tmax, precision=1000, type = None):
+        """
+        This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
+        :param query_species: str or list of str that wants to query
+        :param concs: np.array, concentration of ALL the species
+        :param tmin: float, query temperature minimum
+        :param tmax: float, query temperature maximum
+        :param precision: int, points that np.linspace will use; larger value means more precise plots
+        :return: tuple or list of tuples, minimum reaction rate for the query specie in the temperature range:
+                 tuple form: (min/max rate, temperature when the rate occurs)
+        """
+        # check if the user passes in a correct type of input for query_species
+        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if isinstance(query_species, list):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # check if the user passes in a correct type of input for the temperature bounds
+        try:
+            tmin = float(tmin)
+        except:
+            raise TypeError('the lower temperature bound should be numeric')
+
+        try:
+            tmax = float(tmax)
+        except:
+            raise TypeError('the upper temperature bound should be numeric')
+
+        # check for type
+        valid_type = {'min', 'max'}
+        if type == None:
+            print('Warning: you did not specify the type of reaction rates you want to find. Hint: valid inputs include'
+                  ' min and max')
+            return
+        elif not isinstance(type, str):
+            raise TypeError('Unrecognized type. Hint: valid inputs for type include min and max')
+        elif type.lower() not in valid_type:
+            raise ValueError('Invalid type. Hint: valid inputs for type include min and max')
+
+        # temperature range
+        T_range = np.linspace(tmin, tmax, num=precision)
+
+        # Plot the query specie, either a string or a list
+        if isinstance(query_species, str):
+            # the index of the specie
+            specie_index = list(self.species).index(query_species)
+
+            # reaction rates for the specie at each temperature
+            specie_reaction_rate = []
+
+            # calculate the reaction rate for each temperature
+            for t in T_range:
+                specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
+
+            if type.lower() == 'min':
+                return np.min(specie_reaction_rate), T_range[np.argmin(specie_reaction_rate)]
+            else:
+                return np.max(specie_reaction_rate), T_range[np.argmax(specie_reaction_rate)]
+        else:
+            # the indexes of each query specie
+            specie_indexes = [list(self.species).index(specie) for specie in query_species]
+
+            species_reaction_rates = np.zeros((len(T_range), len(query_species)))
+
+            for t_index, t in enumerate(T_range):
+                for reaction_index, specie_index in enumerate(specie_indexes):
+                    species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                        [specie_index]
+
+            rates = []
+            # find the required rates for each query specie and the temperature
+            if type.lower() == 'min':
+                for index in range(len(query_species)):
+                    rates.append((np.min(species_reaction_rates[:, index]), T_range[np.argmin(species_reaction_rates[:, index])]))
+            else:
+                for index in range(len(query_species)):
+                    rates.append((np.max(species_reaction_rates[:, index]), T_range[np.argmax(species_reaction_rates[:, index])]))
+            return rates
 
 # Elementary Reaction
 class Reaction:

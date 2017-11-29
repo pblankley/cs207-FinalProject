@@ -60,6 +60,17 @@ class ReactionSet:
         get_reactions(idx, name); where name is the name of the input xml.
                             Parses the input xml and returns the reaction data in the
                             form of a dictionary.
+
+        plot_rates_against_temparture(query_species, concs, tmin, tmax, precision=1000); where the query_species is the
+                            species the user wants to query along with the concentration, tmin and tmax are the
+                            temperature range, and precision is the number of points to do np.linspace (basically a
+                            larger value of precision indicates the plot is more accurate).
+
+        find_rates(self, query_species, concs, tmin, tmax, precision=1000, type = None): where the query_species is the
+                            species the user wants to query along with the concentration, tmin and tmax are the
+                            temperature range, and precision is the number of points to do np.linspace (basically a
+                            larger value of precision indicates the plot is more accurate), type can only be min or max,
+                            indicating the type of the rate for the query specie the user wants to find.
     =========
     Examples:
     # Example with the reaction rate

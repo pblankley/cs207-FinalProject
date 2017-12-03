@@ -13,7 +13,7 @@ demo_reaction = ck.ReactionSet("demo_xmls/rxns_reversible.xml")
 concs = np.array([2.0, 1.0, .5, 1.0, 1.0, 1.0, 0.5, 1.5]).reshape(-1, 1)
 
 # plot a single query specie
-demo_reaction.plot('H2O2', concs, 1500, 3000)
+demo_reaction.plot_rates_against_temparture('H2O2', concs, 1500, 3000)
 
 # plot a list of query species
-demo_reaction.plot(['O2','H2'], concs, 1500, 3000)
+demo_reaction.plot_rates_against_temparture(['O2','H2'], concs, 1500, 3000)

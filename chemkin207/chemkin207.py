@@ -379,7 +379,7 @@ class ReactionSet:
 
 #======================================================================================================================#
 # Graphic and tables
-    def plot_rates_against_temparture(self, query_species, concs, tmin, tmax, precision=1000):
+    def plot_rates_against_temparture(self, query_species, concs, tmin, tmax, precision = 1000):
         """
         This function plots the reaction rates for each query specie against the temrperature range
         :param query_species: str or list of str that wants to query
@@ -452,7 +452,7 @@ class ReactionSet:
         plt.legend()
         plt.show()
 
-    def find_rates(self, query_species, concs, tmin, tmax, precision=1000, type = None):
+    def find_rates(self, query_species, concs, T_range, type = None):
         """
         This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
         :param query_species: str or list of str that wants to query
@@ -478,15 +478,11 @@ class ReactionSet:
                 raise ValueError('Specie {} is not the species from your input file'.format(query_species))
 
         # check if the user passes in a correct type of input for the temperature bounds
-        try:
-            tmin = float(tmin)
-        except:
-            raise TypeError('the lower temperature bound should be numeric')
-
-        try:
-            tmax = float(tmax)
-        except:
-            raise TypeError('the upper temperature bound should be numeric')
+        for index, T in enumerate(T_range):
+            try:
+                float(T)
+            except:
+                raise TypeError('Invalid type in temperature range.')
 
         # check for type
         valid_type = {'min', 'max'}
@@ -499,8 +495,6 @@ class ReactionSet:
         elif type.lower() not in valid_type:
             raise ValueError('Invalid type. Hint: valid inputs for type include min and max')
 
-        # temperature range
-        T_range = np.linspace(tmin, tmax, num=precision)
 
         # Plot the query specie, either a string or a list
         if isinstance(query_species, str):

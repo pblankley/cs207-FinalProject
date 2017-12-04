@@ -4,11 +4,13 @@ from functools import reduce
 import os
 import xml.etree.ElementTree as ET
 import sqlite3
+import csv
 import matplotlib as mpl
 #if os.environ.get('DISPLAY','') == '':
 #    print('no display found. Using non-interactive Agg backend')
 #    mpl.use('Agg')
 import matplotlib.pyplot as plt
+import h5py
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -379,18 +381,17 @@ class ReactionSet:
 
 #======================================================================================================================#
 # Graphic and tables
-    def plot_rates_against_temparture(self, query_species, concs, tmin, tmax, precision = 1000):
+    def plot_rates_against_temperature(self, query_species, concs, temps, precision = 1000):
         """
         This function plots the reaction rates for each query specie against the temrperature range
         :param query_species: str or list of str that wants to query
         :param concs: np.array, concentration of ALL the species
-        :param tmin: float, query temperature minimum
-        :param tmax: float, query temperature maximum
+        :param temps: list or np array - all temperatures that will be queried
         :param precision: int, points that np.linspace will use; larger value means more precise plots
         :return: plot of reaction rates against the temperature for each query specie
         """
 
-        # check if the user passes in a correct type of input for query_species
+        # Error checking: check if the user passes in a correct type of input for query_species
         if not (isinstance(query_species, str) or isinstance(query_species, list)):
             raise TypeError('query_species must be a string of specie or a list of string of specie.')
 
@@ -404,19 +405,13 @@ class ReactionSet:
             if query_species not in self.species:
                 raise ValueError('Specie {} is not the species from your input file'.format(query_species))
 
-        # check if the user passes in a correct type of input for the temperature bounds
-        try:
-            tmin = float(tmin)
-        except:
-            raise TypeError('the lower temperature bound should be numeric')
-
-        try:
-            tmax = float(tmax)
-        except:
-            raise TypeError('the upper temperature bound should be numeric')
-
-        # temperature range
-        T_range = np.linspace(tmin, tmax, num=precision)
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
 
         # Plot the query specie, either a string or a list
         if isinstance(query_species, str):
@@ -427,30 +422,158 @@ class ReactionSet:
             specie_reaction_rate = []
 
             # calculate the reaction rate for each temperature
-            for t in T_range:
+            for t in temps:
                 specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
 
             # make the plot
-            plt.plot(T_range, specie_reaction_rate, label=query_species)
+            plt.plot(temps, specie_reaction_rate, label=query_species)
         else:
             # the indexes of each query specie
             specie_indexes = [list(self.species).index(specie) for specie in query_species]
 
-            species_reaction_rates = np.zeros((len(T_range), len(query_species)))
+            species_reaction_rates = np.zeros((len(temps), len(query_species)))
 
-            for t_index, t in enumerate(T_range):
+            for t_index, t in enumerate(temps):
                 for reaction_index, specie_index in enumerate(specie_indexes):
                     species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
                         [specie_index]
 
             for index, specie in enumerate(query_species):
-                plt.plot(T_range, species_reaction_rates[:, index], label=specie)
+                plt.plot(temps, species_reaction_rates[:, index], label=specie)
 
         plt.xlabel("Temperature (K)")
-        plt.ylabel("Reaction rate progress")
+        plt.ylabel("Reaction rate")
         plt.title("Reaction rate of the query species")
         plt.legend()
         plt.show()
+
+    def to_table(self, query_species, concs, temps, out_file, out_type = 'csv'):
+        """
+        Creates a tablular output, by temperature, of selected species in one of several formats
+        :param query_species: str or list of str that wants to query
+        :param concs: np.array, concentration of ALL the species
+        :param temps: list or np array - all temperatures that will be queried
+        :param out_file: name if file to save output table to
+        :param out_type: type of outpt - one of {csv, txt, latex, or hdf5}
+        :return: table in specified output format for each specified specie
+        """
+
+        out_types = set(['csv', 'txt' , 'latex', 'hdf5'])
+
+        # Error checking: confirm output type is reasonable
+        if out_type not in out_types:
+            raise TypeError('Output type not recognized')
+
+        # Error checking: check if the user passes in a correct type of input for query_species
+        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if isinstance(query_species, list):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
+
+        # Get index of each specie in query_species
+        if isinstance(query_species, str):
+            query_species = [query_species]
+        specie_indexes = [list(self.species).index(specie) for specie in list(query_species)]
+
+        # Get full set of reaction rates at each temperature
+        species_reaction_rates = np.zeros((len(temps), len(query_species)))
+        for t_index, t in enumerate(temps):
+            for reaction_index, specie_index in enumerate(specie_indexes):
+                species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                    [specie_index]
+
+        # Generate reaction rate table to be output as np array
+        out_table = np.zeros((len(temps)+1, len(query_species)+1), dtype = object)
+        # First row of output table = species labels
+        out_table[0, 1:] = query_species
+        # First column of output table = temperatures
+        out_table[1:, 0] = temps.T
+        # Bottom right of output table = reaction rates
+        out_table[1:, 1:] = species_reaction_rates
+        # Label temperature column
+        out_table[0, 0] = 'T'
+
+        # Write output array to chosen output format
+        if out_type == 'csv':
+            with open(out_file + ".csv", "w", newline = '') as f:
+                writer = csv.writer(f)
+                writer.writerows(out_table)
+            print("Output species {} to file: {}.csv".format(query_species, out_file))
+
+        elif out_type == 'txt':
+            # Preformatting for txt output
+            out_strings = np.array(
+                [x if type(x) is not float
+                 else format(x, '.2e') for x in out_table.flatten()])
+            out_strings = out_strings.reshape(out_table.shape)
+
+            # Output to file
+            with open(out_file + ".txt", "w", newline='') as f:
+                writer = csv.writer(f, delimiter='\t')
+                writer.writerows(out_strings)
+            print("Output species {} to file: {}.txt".format(query_species, out_file))
+
+        elif out_type == 'latex':
+            # Prepare output table for latex output
+            out_strings = np.array(
+                [x if type(x) is not float
+                 else format(x, '.2e') for x in out_table.flatten()])
+            out_strings = out_strings.reshape(out_table.shape)
+
+            # Prepare necessary latex tags before and after table content
+            latex_preamble = ['\documentclass[11pt,letter]{article}',
+                              '\\begin{document}',
+                              'Reaction rates versus temperature - selected species:'
+                              '\\begin{table}[h]',
+                              '\\begin{tabular}{'+ str('c|'*(out_strings.shape[1]))[:-1] + '}'
+                              ]
+            latex_postamble = ['\\end{tabular}',
+                              '\\end{table}',
+                              '\\end{document}',
+                              ]
+
+            # Output latex to file
+            with open(out_file + '.tex', 'w') as f:
+                f.write('\n'.join(latex_preamble) + '\n')
+                for row in out_strings:
+                    f.write('\\hline\n')
+                    f.write(' & '.join(row) + '\\\\\n')
+                f.write('\n'.join(latex_postamble))
+            print("Output species {} to file: {}.tex".format(query_species, out_file))
+
+        elif out_type == 'hdf5':
+            with h5py.File(out_file + '.hdf5', 'w') as root:
+                # Create individual datasets for each specie
+                for i, specie in enumerate(out_table[0,:]): # Iterate over output species
+                    if i == 0:
+                        continue # Skip the first column with temperature values
+
+                    # Output specie reaction rate subtable versus temperature for each species
+                    specie_subtable = np.concatenate(
+                        (out_table[:, 0].reshape(-1, 1),
+                         out_table[:, i].reshape(-1, 1)),
+                        axis=1)[1:, :]
+
+                    dset = root.create_dataset(specie, data = specie_subtable.astype('float'))
+                    dset.attrs["concentration"] = concs[specie_indexes[i-1]]
+            print("Output species {} to file: {}.hdf5".format(query_species, out_file))
+
 
     def find_rates(self, query_species, concs, T_range, type = None):
         """

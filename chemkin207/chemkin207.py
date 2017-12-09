@@ -395,10 +395,10 @@ class ReactionSet:
                 TypeError if invalid value is found in temperature array
         """
         # Error checking: check if the user passes in a correct type of input for query_species
-        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+        if not hasattr(query_species, "__len__"):
             raise TypeError('query_species must be a string of specie or a list of string of specie.')
 
-        if isinstance(query_species, list):
+        if not isinstance(query_species, str):
             for specie_name in query_species:
                 if not isinstance(specie_name, str):
                     raise TypeError('The list of query_species contains invalid data type.')
@@ -409,7 +409,7 @@ class ReactionSet:
                 raise ValueError('Specie {} is not the species from your input file'.format(query_species))
 
         # Error checking: check if the user passes in reasonable temperature inputs
-        temps = np.array(temps)
+        temps = np.array(temps,ndmin=1)
         for i in range(len(temps)):
             try:
                 temps[i] = float(temps[i])
@@ -467,10 +467,10 @@ class ReactionSet:
                 TypeError if invalid value is found in temperature array
         """
         # Error checking: check if the user passes in a correct type of input for query_species
-        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+        if not hasattr(query_species, "__len__"):
             raise TypeError('query_species must be a string of specie or a list of string of specie.')
 
-        if isinstance(query_species, list):
+        if not isinstance(query_species, str):
             for specie_name in query_species:
                 if not isinstance(specie_name, str):
                     raise TypeError('The list of query_species contains invalid data type.')
@@ -481,7 +481,7 @@ class ReactionSet:
                 raise ValueError('Specie {} is not the species from your input file'.format(query_species))
 
         # Error checking: check if the user passes in reasonable temperature inputs
-        temps = np.array(temps)
+        temps = np.array(temps,ndmin=1)
         for i in range(len(temps)):
             try:
                 temps[i] = float(temps[i])
@@ -518,7 +518,7 @@ class ReactionSet:
         # Table has been outputted.  Return table used in its construction
         return out_table
 
-    def find_rates(self, query_species, concs, T_range, type = None):
+    def find_rates(self, query_species, concs, T_range, rtype):
         """
         This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
         :param query_species: str or list of str that wants to query
@@ -530,10 +530,10 @@ class ReactionSet:
                  tuple form: (min/max rate, temperature when the rate occurs)
         """
         # check if the user passes in a correct type of input for query_species
-        if not (isinstance(query_species, str) or isinstance(query_species, list)):
+        if not hasattr(query_species, "__len__"):
             raise TypeError('query_species must be a string of specie or a list of string of specie.')
 
-        if isinstance(query_species, list):
+        if not isinstance(query_species, str):
             for specie_name in query_species:
                 if not isinstance(specie_name, str):
                     raise TypeError('The list of query_species contains invalid data type.')
@@ -544,6 +544,8 @@ class ReactionSet:
                 raise ValueError('Specie {} is not the species from your input file'.format(query_species))
 
         # check if the user passes in a correct type of input for the temperature bounds
+        if not hasattr(query_species, "__len__") or isinstance(T_range, str):
+            raise TypeError('T_range must be a list or array of possible temperatures')
         for index, T in enumerate(T_range):
             try:
                 float(T)
@@ -551,14 +553,11 @@ class ReactionSet:
                 raise TypeError('Invalid type in temperature range.')
 
         # check for type
+        #### TODO do we really want to Return None instead of forcing the user to specify?
         valid_type = {'min', 'max'}
-        if type == None:
-            print('Warning: you did not specify the type of reaction rates you want to find. Hint: valid inputs include'
-                  ' min and max')
-            return
-        elif not isinstance(type, str):
+        if not isinstance(rtype, str):
             raise TypeError('Unrecognized type. Hint: valid inputs for type include min and max')
-        elif type.lower() not in valid_type:
+        elif rtype.lower() not in valid_type:
             raise ValueError('Invalid type. Hint: valid inputs for type include min and max')
 
 
@@ -574,7 +573,7 @@ class ReactionSet:
             for t in T_range:
                 specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
 
-            if type.lower() == 'min':
+            if rtype.lower() == 'min':
                 return np.min(specie_reaction_rate), T_range[np.argmin(specie_reaction_rate)]
             else:
                 return np.max(specie_reaction_rate), T_range[np.argmax(specie_reaction_rate)]
@@ -591,7 +590,7 @@ class ReactionSet:
 
             rates = []
             # find the required rates for each query specie and the temperature
-            if type.lower() == 'min':
+            if rtype.lower() == 'min':
                 for index in range(len(query_species)):
                     rates.append((np.min(species_reaction_rates[:, index]), T_range[np.argmin(species_reaction_rates[:, index])]))
             else:

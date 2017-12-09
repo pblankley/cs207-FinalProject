@@ -497,9 +497,8 @@ All .xml reaction files should follow the sample format used below.  Source and 
 
 </ctml>
 ```
-## 5. Future Features
-### 5.1 Chemkin Output Package (prettyReaction class)
-#### 5.1.1 Motivation and Description
+## 5. Additional Features
+### 5.1 Motivation and Description
 Currently the user can use chemkin to calculate reaction rates and produce final numerical output for a given temperature.  However, we expect that the user will often need to translate the reaction rates into a form that can be more easily distributed and dissimilated.  
 For example, one of the common uses of this package will be to publish findings in journals.  For each iteration of the journal writing, the user will need to invest time in producing results, pasting them into the appropriate output, and visualizing them to a high quality standard.
 We propose an additional chemkin feature that would automate these outputs.  Other anticipated “use cases” that we would prepare solution for include:
@@ -513,29 +512,131 @@ Our package would support three new output methodologies:
 2. Multiple common output formats, and
 3. Tabulation and “pretty print” presentation of numerical findings
 
-#### 5.1.2 How the feature will fit into chemkin207 code base (and package)
-To achieve this, we would create a “wrapper” class around the ReactionSet() class with its own set of methods, built for more complex outputs.
+### 5.2 ReactionSet class - Graphic and Tables
+To support our users to visualize the output reaction rates and translate the reaction rates into a form that can be more easily distributed and dissimilated, we first add the following three functions to our ReactionSet class:
 
-The rationale behind this approach is that it would leave the basic ReactionSet() class available for python-level calculations for the user, but more repeatable “range level” scripts could be written to produce outputs for direct export to final documents.
+#### 5.2.1 plot_rates_against_temperature(self, query_species, concs, temps)
+This method plots the reaction rates for the user-specified query specie(s), concentration, and temperature.
+<blockquote>
+	
+__*Args*__:   
+* query_species, str or list of species which are being queried (str)
+* concs, np.array, concentration of ALL the species
+* temps, list or np array - all temperatures that will be queried
 
-#### 5.1.3 Modules to write/methods to implement
-We would encompass all of the necessary methods into a single class, called PrettyReaction().  Pretty reaction would include the following methods:
-* **prettyReaction.tables(ReactionSet, columns, species, comparison_basis)**:
-	Runs comparison tables for reaction rates and progress rates for each specie.  Can compare between species or between multiple reactions.
-* **prettyReaction.prettyOutput(ReactionSet, columns, species, consolidate, format)**:
-	Computes reaction rates for multiple reactions and exports formatted outputs into any of .txt, .csv, .json, or HDF5 format.  Text outputs will be “pretty printed” for readability and transportability into final documents
-* **prettyReaction.plot(ReactionSet, species, tmin, tmax)**:
-	Calculates each reaction and outputs into a repeatable format.  Would also use internal settings to format the chart – these include automatically adding chart elements such as positioning lines for local and global temperature maxima, thresholds indicating minimum acceptable reaction rate, and so on.
-* **prettyReaction.ExportPlotConfig(*args)**:
-	Exports a .json with chart format args to be repeated for future reactions (or sets of reactions)
-* **prettyReaction.ImportPlotConfig(*args)**:
-	Imports a .json with chart format args to from previous reactions.
+__*Returns*__: 
+* plot of reaction rates against the temperature for each query specie
 
-#### 5.1.4 Anticipated usage of new feature
-If a user desired formatted outputs, they would declare an artbitrary number of reactions using the existing ReactionSet class.  They would then instantiate a prettyReaction class instance with the reaction module as an argument.  
+__*Raises*__: 
+* TypeError if query_species is not a list of strings
+* ValueError if query_species contains an invalid specie
+* TypeError if invalid value is found in temperature array
+        """
 
-At that point, the user would all call all outputs directly from the prettyReaction class.  It would handle the inputs and manage the ReactionSet class to obtain the necessary outputs.
+</blockquote>
+<br>
 
-#### 5.1.5 External Dependencies
+#### 5.2.2 to_table(self, query_species, concs, temps, out_file, out_type = 'csv', save_output = True)
+This method outputs the reaction data to a table. The default output type of the function is csv and the user can specify the format of the output. Also the user can choose not to save the output file.
+<blockquote>
+	
+__*Args*__:   
+* query_species, list of species which are being queried (str)
+* concs, np.array, concentration of ALL the species
+* temps, list or np array - all temperatures that will be queried
+* out_file, filename of table to output to
+* out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+* save_output, boolean - if true, saves table, if false, simply returns output table
+
+__*Returns*__:
+* formatted output table
+
+__*Raises*__: 
+* TypeError if query_species is not a list of strings
+* ValueError if query_species contains an invalid specie
+* TypeError if invalid value is found in temperature array
+
+</blockquote>
+<br>
+
+#### 5.2.3 find_rates(self, query_species, concs, T_range, rtype)
+This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
+<blockquote>
+
+__*Args*__:
+* query_species: str or list of str that wants to query
+* concs: np.array, concentration of ALL the species
+* tmin: float, query temperature minimum
+* tmax: float, query temperature maximum
+* precision: int, points that np.linspace will use; larger value means more precise plots
+
+__*Return*__:
+* tuple or list of tuples, minimum reaction rate for the query specie in the temperature range: tuple form: (min/max rate, temperature when the rate occurs)
+
+__*Raises*__:
+* TypeError if query_species is not a string of specie or a list of string of specie.
+* TypeError if query_species contains invalid data type.
+* ValueError if a specie in query_species is not in the input file
+* TypeError if T_range is not a list or there is a invalid type in T_range
+
+</blockquote>
+<br>
+
+### 5.3 MultiReactionOutput Class - Wrapper class for ReactionSet
+This class is a wrapper class for parsing multiple reaction outputs at one time. Results are saved into the specified output directory, in two types of tables:
+1. One cross-tabulated table that shows the reaction rates of each specie side-by-side, versus temperature. This table will be stored in the user-specified directory
+2. One set of individual reaction tables that output each indvidual reaction versus temperature. This set of tables is stored in /support
+
+#### 5.3.1 to_table_multi(self, query_species, concs, temps, output_dir, out_type = 'csv', include_supporting = True)
+This method outputs all of the reactions in the MultiReactionOutput instantiation into a single table
+<blockquote>
+	
+__*Args*__:
+* query_species, list of species which are being queried (str)
+* concs, list of np.arrays, one concentration array for each reaction
+* temps, list or np array - all temperatures that will be queried
+* output_dir, direct to output to - saves a file 'multireaction.*' in this directory
+* out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+* include_supporting, boolean - if true, saves tables for each individual reaction in output_dir/supporting
+
+__*Returns*__: 
+* none (but outputs table)
+
+__*Raises*__: 
+* KeyError if queried species are not in ALL reactions
+* TypeError if the list of concentrations does not match the number of reactions
+
+</blockquote>
+<br>
+
+#### 5.3.2 _table_output(out_table, query_species, out_file, out_type = 'csv', multi_output = False)
+This function outputs the table into one of four desired file formats.  Internal function.
+<blockquote>
+
+__*Args*__: 
+* out_table, the table to be output to file.  Must have column headers corresponding to each specie, and row 0 must contain temperature data.
+* query_species, list of species which are being queried (str), in the same order as the table headers
+* out_file, filename to output to
+* out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+* multi_output, boolean which defines whether this is multi-reaction output or not
+
+__*Returns*__: 
+* none, but saves table in out_file
+
+__*Raises*__: 
+* TypeError if invalid output type is specified
+* TypeError if non-str output filename is provided
+	
+</blockquote>
+<br>
+
+### 5.4 Anticipated Usage of New Feature
+If users want to find the min/max reaction rates for certain specie(s), they would call ReactionSet.find_rates with corresponding inputs and the function would yield the min/max reaction rates for the species given the temperature range.
+
+If users want to plot the progress of reaction rates for certain specie(s) in a temperature range, they would call ReactionSet.plot_rates_against_temperature with corresponding inputs and the function will plot the graph illustrating how the reaction rates with regard to the input temperature.
+
+If users desired formatted outputs, they would declare an artbitrary number of reactions using the existing ReactionSet class. They would then instantiate a MultiReactionOutput class instance with the reaction module as an argument. At that point, the users would call all outputs directly from the MultiReactionOutput class by MultiReactionOutput.to_table_multi, which would write all the reaction rates into a single table with the desired input format.
+
+### 5.5 External Dependencies
 We will build the plotting functionality on top of MatplotLib.  The HDF5 outputs will use H5py.  Each of these libraries is open source, well documented, and accepted as a de facto standard for Python.
 JSON, txt, and CSV outputs will all use native functions from python 3.5.  

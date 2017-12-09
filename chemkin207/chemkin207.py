@@ -382,7 +382,7 @@ class ReactionSet:
 #======================================================================================================================#
 # Graphic and tables
     def plot_rates_against_temperature(self, query_species, concs, temps):
-        """This method outputs the reaction data to a table
+        """This method plots the progress of the reaction rates for user-specified species over a temperature range
         --------
         Args:   query_species, str or list of species which are being queried (str)
                 concs, np.array, concentration of ALL the species
@@ -521,11 +521,11 @@ class ReactionSet:
     def find_rates(self, query_species, concs, T_range, rtype):
         """
         This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
-        :param query_species: str or list of str that wants to query
-        :param concs: np.array, concentration of ALL the species
-        :param tmin: float, query temperature minimum
-        :param tmax: float, query temperature maximum
-        :param precision: int, points that np.linspace will use; larger value means more precise plots
+        --------
+        query_species: str or list of str that wants to query
+        concs: np.array, concentration of ALL the species
+        T_range: list of temperatures
+        type: min or max, string indicating the type of rate the user wants to find
         :return: tuple or list of tuples, minimum reaction rate for the query specie in the temperature range:
                  tuple form: (min/max rate, temperature when the rate occurs)
         """
@@ -1014,6 +1014,7 @@ class MultiReactionOutput:
     Methods:
         to_table_multi(self, query_species, concs, temps, output_dir, out_type, include_supporting),
             Outputs all reactions specified at instantiation to a table in the format discussed immediately above.
+
 
     """
     def __init__(self, reaction_set):

@@ -1040,15 +1040,30 @@ class MultiReactionOutput:
         Raises: KeyError if queried species are not in ALL reactions
                 TypeError if the list of concentrations does not match the number of reactions
         """
-        for i, reaction in enumerate(self.reaction_set):
-            # Error checking: each queried species must be in each reaction
-            for species in query_species:
-                if species not in reaction.species:
-                    raise KeyError("Error - queried species must be in all specified reactions")
+        output_dir = os.path.abspath(output_dir)
+        # Error checking: check if the user passes in a correct type of input for query_species
+        if not hasattr(query_species, "__len__"):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
 
-            # Error checking: ensure concs is properly sized for each
-            if len(reaction.species) is not len(concs[i]):
-                raise TypeError("Error - number of concentrations does not match reaction lengths")
+        if isinstance(query_species,str):
+            query_species = [query_species]
+
+        for specie_name in query_species:
+            for i, reaction in enumerate(self.reaction_set):
+                # Error checking: each queried species must be in each reaction
+                if specie_name not in reaction.species:
+                    raise KeyError('Specie {} is not the species from your input file'.format(specie_name))
+                # Error checking: ensure concs is properly sized for each
+                if len(reaction.species) != len(concs[i]):
+                    raise TypeError("Error - number of concentrations does not match reaction lengths")
+
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps,ndmin=1)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
         # (nb most of the reaction error checking is taken care of when the reactions are instantiated)
 
         # Make output directory, and 'supporting' subdirectory if user chooses to store original tables

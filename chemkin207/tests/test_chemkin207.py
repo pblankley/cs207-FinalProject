@@ -7,7 +7,7 @@
     """
 import numpy as np
 import os
-from chemkin207 import ReactionSet
+from chemkin207 import ReactionSet,MultiReactionOutput
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -561,6 +561,19 @@ def test_to_table():
     except TypeError as err:
         assert(type(err)==TypeError)
 
+def test_to_table_helper():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    con = np.array([[1.],[2.],[1.]])
+    try:
+        rs.to_table(['H2','O'], con, 1200,'trash','mike')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.to_table(['H2','O'], con, 1200,129910,'mike')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
 def test_find_rates():
     path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
     rs = ReactionSet(path)
@@ -594,5 +607,44 @@ def test_find_rates():
         assert(type(err)==ValueError)
     try:
         rs.find_rates(['H2','O'], con, [1200,1300,1400],3)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
+def test_multireaction():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    try:
+        MultiReactionOutput(rs)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
+def test_to_table_multi():
+    path1 = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    path2 = os.path.join(BASE_DIR,'test_xmls/rxns_rev.xml')
+    rs1 = ReactionSet(path1)
+    rs2 = ReactionSet(path2)
+    mr = MultiReactionOutput([rs1,rs2])
+    con1 = np.array([[1.],[2.],[1.]])
+    con2 = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    mr.to_table_multi(['H2','O'],[con1,con2],[300,1300,3000],'test_tables','latex',False)
+    with open(os.path.join(BASE_DIR, 'test_tables/multireaction_check.tex'),'r') as f:
+        check = f.read()
+    with open(os.path.join(BASE_DIR, 'test_tables/multireaction.tex'),'r') as f:
+        tab = f.read()
+    assert(tab==check)
+    try:
+        mr.to_table_multi(True,[con1,con2],[120,1300,6000],'test_tables')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        mr.to_table_multi('r',[con1,con2],[120,1300,6000],'test_tables')
+    except KeyError as err:
+        assert(type(err)==KeyError)
+    try:
+        mr.to_table_multi('H2',[np.array([[2.],[1.]]),con2],[120,1300,6000],'test_tables')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        mr.to_table_multi(['H2','O'],[con1,con2],['q',1300,6000],'test_tables')
     except TypeError as err:
         assert(type(err)==TypeError)

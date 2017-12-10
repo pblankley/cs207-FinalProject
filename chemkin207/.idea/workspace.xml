@@ -14,9 +14,47 @@
       <file leaf-file-name="chemkin207.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chemkin207.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-476">
-              <caret line="517" column="90" lean-forward="true" selection-start-line="517" selection-start-column="90" selection-end-line="517" selection-end-column="90" />
+            <state relative-caret-position="3085">
+              <caret line="557" column="31" lean-forward="false" selection-start-line="557" selection-start-column="26" selection-end-line="557" selection-end-column="31" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="demo_table.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../demo_table.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="21" column="71" lean-forward="false" selection-start-line="21" selection-start-column="71" selection-end-line="21" selection-end-column="71" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test_chemkin207.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_chemkin207.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="make_coef_SQL.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/supporting/make_coef_SQL.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <marker date="1511148820011" expanded="true" signature="4095:4124" ph="DROP TABLE I... " />
+                <marker date="1511148820011" expanded="true" signature="4178:4533" ph="CREATE TABLE... COEF_SQL" />
+                <marker date="1511148820011" expanded="true" signature="5021:5239" ph="INSERT INTO COEF_SQL... " />
+                <marker date="1511148820011" expanded="true" signature="5598:5824" ph="INSERT INTO COEF_SQL... " />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -33,9 +71,26 @@
       <find>param</find>
       <find>param_dict</find>
       <find>get_Reaction</find>
-      <find>reaction_coef_forwa</find>
       <find>plot</find>
       <find>gra</find>
+      <find>class</find>
+      <find>reaction_rate</find>
+      <find>class reac</find>
+      <find>reaction_set</find>
+      <find>reaction</find>
+      <find>class reaction</find>
+      <find>class reactionset</find>
+      <find>get_query</find>
+      <find>arrhen</find>
+      <find>reaction_rates(</find>
+      <find>progress_rate</find>
+      <find>class reacion</find>
+      <find>reaction_coef_forwa</find>
+      <find>arrhenius(</find>
+      <find>reaction_rate(</find>
+      <find>to_Table</find>
+      <find>to_t</find>
+      <find>plot_rate</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -46,6 +101,7 @@
         <option value="$PROJECT_DIR$/demo.py" />
         <option value="$PROJECT_DIR$/chemkin.py" />
         <option value="$PROJECT_DIR$/chemkin207.py" />
+        <option value="$PROJECT_DIR$/../demo_table.py" />
       </list>
     </option>
   </component>
@@ -75,6 +131,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -83,11 +140,21 @@
               <item name="chemkin207" type="b2602c69:ProjectViewProjectNode" />
               <item name="chemkin207" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="chemkin207" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chemkin207" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chemkin207" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chemkin207" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="test_tables" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -258,7 +325,7 @@
     <frame x="-6" y="-6" width="1613" height="873" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13445903" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1851157" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -290,30 +357,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/chemkin207.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chemkin207.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chemkin207.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/_old_modules/reaction_coeffs.py" />
     <entry file="file://$PROJECT_DIR$/chemkin.py" />
     <entry file="file://$PROJECT_DIR$/_old_modules/reaction_coeffs.py" />
@@ -368,10 +411,42 @@
     <entry file="file://$PROJECT_DIR$/test_chemkin.py" />
     <entry file="file://$PROJECT_DIR$/_old_modules/reaction_coeffs.py" />
     <entry file="file://$PROJECT_DIR$/chemkin.py" />
+    <entry file="file://$PROJECT_DIR$/supporting/make_coef_SQL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1511148820011" expanded="true" signature="4095:4124" ph="DROP TABLE I... " />
+            <marker date="1511148820011" expanded="true" signature="4178:4533" ph="CREATE TABLE... COEF_SQL" />
+            <marker date="1511148820011" expanded="true" signature="5021:5239" ph="INSERT INTO COEF_SQL... " />
+            <marker date="1511148820011" expanded="true" signature="5598:5824" ph="INSERT INTO COEF_SQL... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../demo_table.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="21" column="71" lean-forward="false" selection-start-line="21" selection-start-column="71" selection-end-line="21" selection-end-column="71" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_chemkin207.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/chemkin207.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-476">
-          <caret line="517" column="90" lean-forward="true" selection-start-line="517" selection-start-column="90" selection-end-line="517" selection-end-column="90" />
+        <state relative-caret-position="3085">
+          <caret line="557" column="31" lean-forward="false" selection-start-line="557" selection-start-column="26" selection-end-line="557" selection-end-column="31" />
           <folding />
         </state>
       </provider>

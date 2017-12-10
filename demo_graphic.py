@@ -16,4 +16,4 @@ concs = np.array([2.0, 1.0, .5, 1.0, 1.0, 1.0, 0.5, 1.5]).reshape(-1, 1)
 demo_reaction.plot_rates_against_temperature('H2O2', concs, np.linspace(1500, 3000, 100))
 
 # plot a list of query species
-demo_reaction.plot_rates_against_temperature(['O2','H2'], concs, np.linspace(1500, 3000, 100))
+demo_reaction.plot_rates_against_temperature(['H', 'O', 'OH', 'H2', 'H2O', 'O2', 'HO2', 'H2O2'], concs, np.linspace(1500, 3000, 20))

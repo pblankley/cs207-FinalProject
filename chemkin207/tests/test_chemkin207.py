@@ -94,6 +94,19 @@ def test_reaction_rates_rev_high():
     except ValueError as err:
         assert(type(err)==ValueError)
 
+def test_uneven_out_bounds():
+    x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev_ob_test.xml')
+    rrr = ReactionSet(path)
+    try:
+        rrr.reaction_rates(x,210)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rrr.reaction_rates(x,3020)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+
 def test_set_params():
     path = os.path.join(BASE_DIR, 'test_xmls/reaction_coef_1.xml')
     rrr = ReactionSet(path)

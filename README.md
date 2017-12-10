@@ -640,5 +640,5 @@ If users want to plot the progress of reaction rates for certain specie(s) in a 
 If users desired formatted outputs, they would declare an arbitrary number of reactions using the existing ReactionSet class. They would then instantiate a MultiReactionOutput class instance with the reaction module as an argument. At that point, the users would call all outputs directly from the MultiReactionOutput class by MultiReactionOutput.to_table_multi, which would write all the reaction rates into a single table with the desired output format.
 
 ### 5.5 External Dependencies
-We will build the plotting functionality on top of MatplotLib.  The HDF5 outputs will use H5py.  The other important dependencies of this package are sqlite3 and numpy. Each of these libraries is open source, well documented, and accepted as a de facto standard for Python.
-latex, txt, and CSV outputs will all use native functions from python 3.5.  
+We will build the plotting functionality on top of MatplotLib.  The HDF5 outputs will use H5py.  The other important dependencies of this package are sqlite3 and NumPy. Each of these libraries is open source, well documented, and accepted as a de facto standard for Python.
+The latex, txt, and CSV outputs will all use native functions from python 3.5.  

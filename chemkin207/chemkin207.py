@@ -795,9 +795,8 @@ class IrreversibleReaction(Reaction):
                 V'12*A + V'32*C -> V''22*B + V''32*C
         It taken in the vectors v', v'' and x in the order [[A],[B],[C]].
         -------
-        Args: v',v'', matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.
-              x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
-              k; float or list of length n (number of equations), the k constant in the reaction of elementary equations.
+        Args: x_in; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
+              T; float the temperature at which the reactions occur.
         -------
         Returns: list of floats; the progress rate of the irreversible reaction for each equation
         -------

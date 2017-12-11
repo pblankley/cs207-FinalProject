@@ -4,9 +4,9 @@ python:
 install:
     - pip install matplotlib
 before_install:
+    - pip install h5py
     - pip install pytest pytest-cov
     - pip install coveralls
-    - pip install h5py
 services:
     - sqlite3
 env:

@@ -4,6 +4,7 @@ python:
 install:
     - pip install matplotlib
 before_install:
+    - pip install h5py
     - pip install pytest pytest-cov
     - pip install coveralls
 services:

@@ -7,7 +7,7 @@
     """
 import numpy as np
 import os
-from chemkin207 import ReactionSet
+from chemkin207 import ReactionSet,MultiReactionOutput
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -91,6 +91,19 @@ def test_reaction_rates_rev_high():
         assert(type(err)==ValueError)
     try:
         rrr.progress_rates('12,34,5,2,1',1300)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+
+def test_uneven_out_bounds():
+    x = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    path = os.path.join(BASE_DIR, 'test_xmls/rxns_rev_ob_test.xml')
+    rrr = ReactionSet(path)
+    try:
+        rrr.reaction_rates(x,210)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rrr.reaction_rates(x,3020)
     except ValueError as err:
         assert(type(err)==ValueError)
 
@@ -464,8 +477,6 @@ def test_reversible_tag_error():
     except ValueError as err:
         assert(type(err) == ValueError)
 
-# UPDATE FOR NEW PARSER
-# Update new form of input
 # This test case is not complete, still need to test for the NASA inputs
 def test_reversible_input():
     # Test a standard output
@@ -499,14 +510,154 @@ def test_reversible_input():
     for index, ele in enumerate(expected_dict):
         assert expected_species[index] == actual_dict['species'][index]
 
+def test_plot_rates_against_temp():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    con = np.array([[1.],[2.],[1.]])
+    try:
+        rs.plot_rates_against_temperature(True, con, 1200)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.plot_rates_against_temperature(True, con, [1200,1300,1400])
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.plot_rates_against_temperature('r', con, 1200)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.plot_rates_against_temperature(['H2','r'], con, 1200)
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.plot_rates_against_temperature(['H2',12], con, 1200)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.plot_rates_against_temperature(['H2','O'], con, [1010,'e'])
+    except TypeError as err:
+        assert(type(err)==TypeError)
 
+def test_to_table():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    con = np.array([[1.],[2.],[1.]])
+    tab = rs.to_table(['H2','O'],con,[120,1300,6000],'trash',save_output=False)
+    check = np.array([['T', 'H2', 'O'],
+       [120, -60.0, -70.0],
+       [1300, -60.0, -70.0],
+       [6000, -60.0, -70.0]], dtype=object)
+    assert(np.array_equal(tab,check))
+    try:
+        rs.to_table(True, con, 1200,'trash')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.to_table(True, con, [1200,1300,1400],'trash')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.to_table('r', con, 1200,'trash')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.to_table(['H2','r'], con, 1200,'trash')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.to_table(['H2',12], con, 1200,'trash')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.to_table(['H2','O'], con, [1010,'e'],'trash')
+    except TypeError as err:
+        assert(type(err)==TypeError)
 
-    #assert np.array_equal(actual_dict['species'], expected_dict['species'])
-    #for i in range(len(expected_dict['A'])):
-    #    assert actual_dict['A'][i] == expected_dict['A'][i] or actual_dict['A'][i] == 0
-    #    assert actual_dict['b'][i] == expected_dict['b'][i] or actual_dict['b'][i] == 0
-    #    assert actual_dict['E'][i] == expected_dict['E'][i] or actual_dict['E'][i] == 0
-    #    assert actual_dict['k'][i] == expected_dict['k'][i] or actual_dict['k'][i] == 0
-    #assert np.array_equal(actual_dict['coeftype'], expected_dict['coeftype'])
-    #assert np.array_equal(actual_dict['vprime'], expected_dict['vprime'])
-    #assert np.array_equal(actual_dict['v2prime'], expected_dict['v2prime'])
+def test_to_table_helper():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    con = np.array([[1.],[2.],[1.]])
+    try:
+        rs.to_table(['H2','O'], con, 1200,'trash','mike')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.to_table(['H2','O'], con, 1200,129910,'mike')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
+def test_find_rates():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    con = np.array([[1.],[2.],[1.]])
+    tab = rs.find_rates(['H2','O'],con,[120,1300,6000],'min')
+    assert(tab[0]==(-60.0,120))
+    assert(tab[1]==(-70.0,120))
+    try:
+        rs.find_rates(True, con, [1200],'min')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.find_rates('r', con, [1200],'min')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.find_rates(['H2','r'], con, [1200],'min')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.find_rates(['H2',12], con, [1200],'min')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.find_rates(['H2','O'], con, [1010,'e'],'max')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        rs.find_rates(['H2','O'], con, [1200,1300,1400],'trash')
+    except ValueError as err:
+        assert(type(err)==ValueError)
+    try:
+        rs.find_rates(['H2','O'], con, [1200,1300,1400],3)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
+def test_multireaction():
+    path = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    rs = ReactionSet(path)
+    try:
+        MultiReactionOutput(rs)
+    except TypeError as err:
+        assert(type(err)==TypeError)
+
+def test_to_table_multi():
+    path1 = os.path.join(BASE_DIR,'test_xmls/reaction_rate_1.xml')
+    path2 = os.path.join(BASE_DIR,'test_xmls/rxns_rev.xml')
+    rs1 = ReactionSet(path1)
+    rs2 = ReactionSet(path2)
+    mr = MultiReactionOutput([rs1,rs2])
+    con1 = np.array([[1.],[2.],[1.]])
+    con2 = np.array([2., 1., .5, 1., 1., 1., .5, 1.]).T
+    mr.to_table_multi(['H2','O'],[con1,con2],[300,1300,3000],'test_tables','latex',False)
+    with open(os.path.join(BASE_DIR, 'test_tables/multireaction_check.tex'),'r') as f:
+        check = f.read()
+    with open(os.path.join(BASE_DIR, 'test_tables/multireaction.tex'),'r') as f:
+        tab = f.read()
+    assert(tab==check)
+    try:
+        mr.to_table_multi(True,[con1,con2],[120,1300,6000],'test_tables')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        mr.to_table_multi('r',[con1,con2],[120,1300,6000],'test_tables')
+    except KeyError as err:
+        assert(type(err)==KeyError)
+    try:
+        mr.to_table_multi('H2',[np.array([[2.],[1.]]),con2],[120,1300,6000],'test_tables')
+    except TypeError as err:
+        assert(type(err)==TypeError)
+    try:
+        mr.to_table_multi(['H2','O'],[con1,con2],['q',1300,6000],'test_tables')
+    except TypeError as err:
+        assert(type(err)==TypeError)

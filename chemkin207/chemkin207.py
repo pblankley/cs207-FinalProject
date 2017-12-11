@@ -4,6 +4,13 @@ from functools import reduce
 import os
 import xml.etree.ElementTree as ET
 import sqlite3
+import csv
+import matplotlib as mpl
+#if os.environ.get('DISPLAY','') == '':
+#    print('no display found. Using non-interactive Agg backend')
+#    mpl.use('Agg')
+import matplotlib.pyplot as plt
+import h5py
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -55,6 +62,17 @@ class ReactionSet:
         get_reactions(idx, name); where name is the name of the input xml.
                             Parses the input xml and returns the reaction data in the
                             form of a dictionary.
+
+        plot_rates_against_temparture(query_species, concs, tmin, tmax, precision=1000); where the query_species is the
+                            species the user wants to query along with the concentration, tmin and tmax are the
+                            temperature range, and precision is the number of points to do np.linspace (basically a
+                            larger value of precision indicates the plot is more accurate).
+
+        find_rates(self, query_species, concs, tmin, tmax, precision=1000, type = None): where the query_species is the
+                            species the user wants to query along with the concentration, tmin and tmax are the
+                            temperature range, and precision is the number of points to do np.linspace (basically a
+                            larger value of precision indicates the plot is more accurate), type can only be min or max,
+                            indicating the type of the rate for the query specie the user wants to find.
     =========
     Examples:
     # Example with the reaction rate
@@ -361,6 +379,224 @@ class ReactionSet:
 
         return reaction_dict
 
+#======================================================================================================================#
+# Graphic and tables
+    def plot_rates_against_temperature(self, query_species, concs, temps):
+        """This method plots the progress of the reaction rates for user-specified species over a temperature range
+        --------
+        Args:   query_species, str or list of species which are being queried (str)
+                concs, np.array, concentration of ALL the species
+                temps, list or np array - all temperatures that will be queried
+        --------
+        Returns: plot of reaction rates against the temperature for each query specie
+        --------
+        Raises: TypeError if query_species is not a list of strings
+                ValueError if query_species contains an invalid specie
+                TypeError if invalid value is found in temperature array
+        """
+        # Error checking: check if the user passes in a correct type of input for query_species
+        if not hasattr(query_species, "__len__"):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if not isinstance(query_species, str):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps,ndmin=1)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
+
+        # Plot the query specie, either a string or a list
+        if isinstance(query_species, str):
+            # the index of the specie
+            specie_index = list(self.species).index(query_species)
+
+            # reaction rates for the specie at each temperature
+            specie_reaction_rate = []
+
+            # calculate the reaction rate for each temperature
+            for t in temps:
+                specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
+
+            # make the plot
+            plt.plot(temps, specie_reaction_rate, label=query_species)
+        else:
+            # the indexes of each query specie
+            specie_indexes = [list(self.species).index(specie) for specie in query_species]
+
+            species_reaction_rates = np.zeros((len(temps), len(query_species)))
+
+            for t_index, t in enumerate(temps):
+                for reaction_index, specie_index in enumerate(specie_indexes):
+                    species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                        [specie_index]
+
+            for index, specie in enumerate(query_species):
+                plt.plot(temps, species_reaction_rates[:, index], label=specie)
+
+        plt.xlabel("Temperature (K)")
+        plt.ylabel("Reaction rate")
+        plt.title("Reaction rate of the query species")
+        plt.legend()
+        plt.show()
+
+    def to_table(self, query_species, concs, temps, out_file, out_type = 'csv', save_output = True):
+        """This method outputs the reaction data to a table
+        --------
+        Args:   query_species, list of species which are being queried (str)
+                concs, np.array, concentration of ALL the species
+                temps, list or np array - all temperatures that will be queried
+                out_file, filename of table to output to
+                out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+                save_output, boolean - if true, saves table, if false, simply returns output table
+        --------
+        Returns: formatted output table
+        --------
+        Raises: TypeError if query_species is not a list of strings
+                ValueError if query_species contains an invalid specie
+                TypeError if invalid value is found in temperature array
+        """
+        # Error checking: check if the user passes in a correct type of input for query_species
+        if not hasattr(query_species, "__len__"):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if not isinstance(query_species, str):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps,ndmin=1)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
+
+        # Get index of each specie in query_species
+        if isinstance(query_species, str):
+            query_species = [query_species]
+        specie_indexes = [list(self.species).index(specie) for specie in list(query_species)]
+
+        # Get full set of reaction rates at each temperature
+        species_reaction_rates = np.zeros((len(temps), len(query_species)))
+        for t_index, t in enumerate(temps):
+            for reaction_index, specie_index in enumerate(specie_indexes):
+                species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                    [specie_index]
+
+        # Generate reaction rate table to be output as np array
+        out_table = np.zeros((len(temps)+1, len(query_species)+1), dtype = object)
+        # First row of output table = species labels
+        out_table[0, 1:] = query_species
+        # First column of output table = temperatures
+        out_table[1:, 0] = temps.T
+        # Bottom right of output table = reaction rates
+        out_table[1:, 1:] = species_reaction_rates
+        # Label temperature column
+        out_table[0, 0] = 'T'
+
+        # Write output array to chosen output format
+        if save_output:
+            _table_output(out_table, query_species, out_file, out_type)
+
+        # Table has been outputted.  Return table used in its construction
+        return out_table
+
+    def find_rates(self, query_species, concs, T_range, rtype):
+        """
+        This function finds the minimum reaction rate for the query specie in order passed in given the temperature range
+        --------
+        query_species: str or list of str that wants to query
+        concs: np.array, concentration of ALL the species
+        T_range: list of temperatures
+        type: min or max, string indicating the type of rate the user wants to find
+        :return: tuple or list of tuples, minimum reaction rate for the query specie in the temperature range:
+                 tuple form: (min/max rate, temperature when the rate occurs)
+        """
+        # check if the user passes in a correct type of input for query_species
+        if not hasattr(query_species, "__len__"):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if not isinstance(query_species, str):
+            for specie_name in query_species:
+                if not isinstance(specie_name, str):
+                    raise TypeError('The list of query_species contains invalid data type.')
+                if specie_name not in self.species:
+                    raise ValueError('Specie {} is not the species from your input file'.format(specie_name))
+        else:
+            if query_species not in self.species:
+                raise ValueError('Specie {} is not the species from your input file'.format(query_species))
+
+        # check if the user passes in a correct type of input for the temperature bounds
+        if not hasattr(query_species, "__len__") or isinstance(T_range, str):
+            raise TypeError('T_range must be a list or array of possible temperatures')
+        for index, T in enumerate(T_range):
+            try:
+                float(T)
+            except:
+                raise TypeError('Invalid type in temperature range.')
+
+        # check for type
+        #### TODO do we really want to Return None instead of forcing the user to specify?
+        valid_type = {'min', 'max'}
+        if not isinstance(rtype, str):
+            raise TypeError('Unrecognized type. Hint: valid inputs for type include min and max')
+        elif rtype.lower() not in valid_type:
+            raise ValueError('Invalid type. Hint: valid inputs for type include min and max')
+
+
+        # Plot the query specie, either a string or a list
+        if isinstance(query_species, str):
+            # the index of the specie
+            specie_index = list(self.species).index(query_species)
+
+            # reaction rates for the specie at each temperature
+            specie_reaction_rate = []
+
+            # calculate the reaction rate for each temperature
+            for t in T_range:
+                specie_reaction_rate.append(self.reaction_rates(concs, t)[specie_index])
+
+            if rtype.lower() == 'min':
+                return np.min(specie_reaction_rate), T_range[np.argmin(specie_reaction_rate)]
+            else:
+                return np.max(specie_reaction_rate), T_range[np.argmax(specie_reaction_rate)]
+        else:
+            # the indexes of each query specie
+            specie_indexes = [list(self.species).index(specie) for specie in query_species]
+
+            species_reaction_rates = np.zeros((len(T_range), len(query_species)))
+
+            for t_index, t in enumerate(T_range):
+                for reaction_index, specie_index in enumerate(specie_indexes):
+                    species_reaction_rates[t_index][reaction_index] = self.reaction_rates(concs, t) \
+                        [specie_index]
+
+            rates = []
+            # find the required rates for each query specie and the temperature
+            if rtype.lower() == 'min':
+                for index in range(len(query_species)):
+                    rates.append((np.min(species_reaction_rates[:, index]), T_range[np.argmin(species_reaction_rates[:, index])]))
+            else:
+                for index in range(len(query_species)):
+                    rates.append((np.max(species_reaction_rates[:, index]), T_range[np.argmax(species_reaction_rates[:, index])]))
+            return rates
 
 # Elementary Reaction
 class Reaction:
@@ -559,9 +795,8 @@ class IrreversibleReaction(Reaction):
                 V'12*A + V'32*C -> V''22*B + V''32*C
         It taken in the vectors v', v'' and x in the order [[A],[B],[C]].
         -------
-        Args: v',v'', matrices, numpy arrays of form mxn where m is the number of reactants and n is number of equations.
-              x; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
-              k; float or list of length n (number of equations), the k constant in the reaction of elementary equations.
+        Args: x_in; vector, numpy array (or list of lists) of length equal to the number of reactants in the system of equations.
+              T; float the temperature at which the reactions occur.
         -------
         Returns: list of floats; the progress rate of the irreversible reaction for each equation
         -------
@@ -762,3 +997,209 @@ class ReversibleReaction(Reaction):
         self.w = k*reduce((lambda x,y: x*y),np.power(x.T[0],self.vprime.T[0])) \
                            - kb*reduce((lambda x,y: x*y),np.power(x.T[0],self.v2prime.T[0]))
         return self.w
+
+
+class MultiReactionOutput:
+    """
+    This class is a wrapper class for parsing multiple reaction outputs at one time.
+    Results are saved into the specified output directory, in two types of tables:
+    1) One cross-tabulated table that shows the reaction rates of each specie side-by-side, versus temperature
+    2) One set of individual reaction tables that output each indvidual reaction versus temperature.
+    (1) is stored in the specified output directly, (2) is stored in /supporting.
+    ----------
+    Args: reaction_set: List of ReactionSet classes
+
+    ----------
+    Methods:
+        to_table_multi(self, query_species, concs, temps, output_dir, out_type, include_supporting),
+            Outputs all reactions specified at instantiation to a table in the format discussed immediately above.
+
+
+    """
+    def __init__(self, reaction_set):
+        # Error checking: reaction_set must contain more than one reaction
+        if len(reaction_set) < 2:
+            raise TypeError("Only a single reaction passed!  Use Reaction instead.")
+
+        self.reaction_set = reaction_set
+
+    def to_table_multi(self, query_species, concs, temps, output_dir,
+                       out_type = 'csv', include_supporting = True):
+        """This method outputs all of the reactions in the MultiReactionOutput instantiation into a single table
+        --------
+        Args:   query_species, list of species which are being queried (str)
+                concs, list of np.arrays, one concentration array for each reaction
+                temps, list or np array - all temperatures that will be queried
+                output_dir, direct to output to - saves a file 'multireaction.*' in this directory
+                out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+                include_supporting, boolean - if true, saves tables for each individual reaction
+                    in output_dir/supporting
+        --------
+        Returns: none (but outputs table)
+        --------
+        Raises: KeyError if queried species are not in ALL reactions
+                TypeError if the list of concentrations does not match the number of reactions
+        """
+        output_dir = os.path.abspath(output_dir)
+        # Error checking: check if the user passes in a correct type of input for query_species
+        if not hasattr(query_species, "__len__"):
+            raise TypeError('query_species must be a string of specie or a list of string of specie.')
+
+        if isinstance(query_species,str):
+            query_species = [query_species]
+
+        for specie_name in query_species:
+            for i, reaction in enumerate(self.reaction_set):
+                # Error checking: each queried species must be in each reaction
+                if specie_name not in reaction.species:
+                    raise KeyError('Specie {} is not the species from your input file'.format(specie_name))
+                # Error checking: ensure concs is properly sized for each
+                if len(reaction.species) != len(concs[i]):
+                    raise TypeError("Error - number of concentrations does not match reaction lengths")
+
+        # Error checking: check if the user passes in reasonable temperature inputs
+        temps = np.array(temps,ndmin=1)
+        for i in range(len(temps)):
+            try:
+                temps[i] = float(temps[i])
+            except:
+                raise TypeError('Non numeric value found in temperature array')
+        # (nb most of the reaction error checking is taken care of when the reactions are instantiated)
+
+        # Make output directory, and 'supporting' subdirectory if user chooses to store original tables
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        if include_supporting and not os.path.exists(os.path.join(output_dir,"supporting")):
+            os.makedirs(os.path.join(output_dir,"supporting"))
+
+        # Get the output table of each reaction class
+        output_tables = []
+        for i,reaction in enumerate(self.reaction_set):
+            output_tables.append(reaction.to_table(query_species, concs[i], temps, out_type = out_type,
+                              out_file = output_dir + "/supporting/reaction" + str(i), save_output=include_supporting))
+
+        # Assemble consolidated output table
+        num_reactions = len(output_tables)
+        num_species = len(query_species)
+
+        combined_output_table = np.zeros((len(output_tables[0]),num_reactions*num_species+1), dtype=object)
+
+        # Set the temperatures column
+        combined_output_table[:,0] = output_tables[0][:,0]
+
+        # Interweave each reaction table's data columns into a single output table
+        for i in range(num_reactions):
+            combined_output_table[:, i+1::num_reactions] = output_tables[i][:, 1:]
+
+        # Add additional row to label reaction number
+        reac_labels = np.array([""] * combined_output_table.shape[1], dtype=object)
+        for i in range(num_reactions):
+            reac_labels[i+1::num_reactions] = "rxn " + str(i)
+        combined_output_table = np.insert(combined_output_table, 1, reac_labels, axis=0)
+
+        _table_output(combined_output_table, query_species, output_dir+"/multireaction", out_type, multi_output=True)
+
+
+
+def _table_output(out_table, query_species, out_file, out_type = 'csv', multi_output = False):
+    """This function outputs the table into one of four desired file formats.  Internal function.
+    --------
+    Args:   out_table, the table to be output to file.  Must have column headers corresponding to each specie, and row 0
+                must contain temperature data.
+            query_species, list of species which are being queried (str), in the same order as the table headers
+            out_file, filename to output to
+            out_type, one of ['csv', 'txt', 'latex', 'hdf5']
+            multi_output, boolean which defines whether this is multi-reaction output or not
+    --------
+    Returns: none, but saves table in out_file
+    --------
+    Raises: TypeError if invalid output type is specified
+            TypeError if non-str output filename is provided
+     """
+    # Error checking: confirm output type is reasonable
+    out_types = set(['csv', 'txt', 'latex', 'hdf5'])
+    if out_type not in out_types:
+        raise TypeError('Output type not recognized')
+
+    # Error checking: confirm filename is a string
+    if type(out_file) is not str:
+        raise TypeError("Filename must be a string")
+
+    # Parse table output and structure output per type
+    if out_type == 'csv':
+        with open(out_file + ".csv", "w", newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(out_table)
+        print("Output {} to file: {}.csv".format(query_species, out_file))
+
+    elif out_type == 'txt':
+        # Preformatting for txt output
+        out_strings = np.array(
+            [x if type(x) is not float
+             else format(x, '.2e') for x in out_table.flatten()])
+        out_strings = out_strings.reshape(out_table.shape)
+
+        # Output to file
+        with open(out_file + ".txt", "w", newline='') as f:
+            writer = csv.writer(f, delimiter='\t')
+            writer.writerows(out_strings)
+        print("Output {} to file: {}.txt".format(query_species, out_file))
+
+    elif out_type == 'latex':
+        # Prepare output table for latex output
+        out_strings = np.array(
+            [x if type(x) is not float
+             else format(x, '.2e') for x in out_table.flatten()])
+        out_strings = out_strings.reshape(out_table.shape)
+
+        # Prepare necessary latex tags before and after table content
+        latex_preamble = ['\documentclass[11pt,letter]{article}',
+                          '\\begin{document}',
+                          'Reaction rates versus temperature - selected species:'
+                          '\\begin{table}[h]',
+                          '\\begin{tabular}{' + str('c|' * (out_strings.shape[1]))[:-1] + '}'
+                          ]
+        latex_postamble = ['\\end{tabular}',
+                           '\\end{table}',
+                           '\\end{document}',
+                           ]
+
+        # Output latex to file
+        with open(out_file + '.tex', 'w') as f:
+            f.write('\n'.join(latex_preamble) + '\n')
+            for row in out_strings:
+                f.write('\\hline\n')
+                f.write(' & '.join(row) + '\\\\\n')
+            f.write('\n'.join(latex_postamble))
+        print("Output {} to file: {}.tex".format(query_species, out_file))
+
+    elif out_type == 'hdf5':
+        # Solve number of species and reactions from the passed output table
+        num_species = len(query_species)
+        num_rxns = (out_table.shape[1] - 1) // num_species
+
+        # Set up memory locations for the HDF% tree
+        specie_grps = np.zeros(num_species, dtype=object)
+        specie_dsets = np.zeros((num_species, num_rxns), dtype=object)
+
+        # Output to HDF5
+        with h5py.File(out_file + '.hdf5', 'w') as root:
+            for i, specie_table in enumerate(np.split(out_table[:, 1:], num_species, axis=1)):
+                specie_grps[i] = root.create_group(query_species[i])
+                for j in range(num_rxns):
+
+                    if num_rxns == 1: # This is a single reaction table
+                        dataset = np.concatenate(
+                        (out_table[:, 0].reshape(-1, 1),
+                         specie_table),
+                        axis=1)[1:, :]
+
+                    else: # This is a multi-reaction table
+                        dataset = np.concatenate(
+                        (out_table[:, 0].reshape(-1, 1),
+                         specie_table[:,j].reshape(-1,1)),
+                        axis=1)[2:, :]
+
+                    specie_dsets[i,j] = specie_grps[i].create_dataset("RXN"+str(j),
+                                                                      data = dataset.astype('float'))
+        print("Output {} to file: {}.hdf5".format(query_species, out_file))

@@ -13,3 +13,11 @@ Figuring out how to deploy the module with PyPI.
 ## 0.1.6
 
 Rename the module to chemkin207, and add .test() method to run the tests.
+
+## 0.1.7-0.1.12
+
+Figuring out how to port files with a distribution on PyPI
+
+## 0.1.13
+
+Added features for output to tables and plotting and analysis of reactions.  Also, added a class that handles several ReactionSet's at a time and outputs joined tables.
